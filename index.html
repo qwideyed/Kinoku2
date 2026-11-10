@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrustIndex — Reviews for Websites & Digital Tools</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-hover: #1f2937;
+      --border: #1e293b;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #10b981;
+      --accent-hover: #059669;
+      --star-high: #10b981;
+      --star-mid: #f59e0b;
+      --star-low: #ef4444;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+      border: none;
+      padding: 0.6rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .hero {
+      max-width: 800px;
+      margin: 3rem auto 2rem;
+      text-align: center;
+      padding: 0 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .search-bar:focus {
+      border-color: var(--accent);
+    }
+
+    .categories {
+      max-width: 1100px;
+      margin: 0 auto 2rem;
+      padding: 0 1.5rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .cat-btn {
+      background: var(--surface);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.45rem 1rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    .cat-btn.active, .cat-btn:hover {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .grid {
+      max-width: 1100px;
+      margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .card:hover {
+      border-color: #334155;
+      transform: translateY(-2px);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .card-domain {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .badge-cat {
+      font-size: 0.75rem;
+      background: #1e293b;
+      color: #cbd5e1;
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+    }
+
+    .rating-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      margin: 0.75rem 0;
+    }
+
+    .score-box {
+      font-weight: 700;
+      font-size: 0.9rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      color: #000;
+    }
+
+    .score-high { background: var(--star-high); }
+    .score-mid { background: var(--star-mid); }
+    .score-low { background: var(--star-low); color: #fff; }
+
+    .review-snippet {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.75rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--accent);
+      margin-top: 0.5rem;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      z-index: 50;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 480px;
+      padding: 1.5rem;
+    }
+
+    .modal h2 {
+      margin-bottom: 1rem;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 0.65rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="nav-container">
+      <div class="logo">★ Trust<span>Index</span></div>
+      <button class="btn-primary" onclick="toggleModal(true)">+ Write a Review</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Honest Reviews for Websites & Everything Else</h1>
+    <p>Search rated websites, apps, games, and digital services.</p>
+    <input type="text" id="searchInput" class="search-bar" placeholder="Search by name, link, or keyword..." oninput="renderCards()">
+  </section>
+
+  <div class="categories" id="categoryBar">
+    <button class="cat-btn active" onclick="setCategory('All')">All</button>
+    <button class="cat-btn" onclick="setCategory('Websites')">Websites</button>
+    <button class="cat-btn" onclick="setCategory('Apps & Tools')">Apps & Tools</button>
+    <button class="cat-btn" onclick="setCategory('Gaming')">Gaming</button>
+    <button class="cat-btn" onclick="setCategory('Entertainment')">Entertainment</button>
+  </div>
+
+  <main class="grid" id="cardsGrid"></main>
+
+  <!-- Add Review Modal -->
+  <div class="modal-overlay" id="reviewModal">
+    <div class="modal">
+      <h2>Submit a Review</h2>
+      <form id="reviewForm" onsubmit="addReview(event)">
+        <div class="form-group">
+          <label>Name of Website or Item</label>
+          <input type="text" id="itemName" required placeholder="e.g. GitHub">
+        </div>
+        <div class="form-group">
+          <label>URL or Subtitle</label>
+          <input type="text" id="itemDomain" required placeholder="e.g. github.com">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <select id="itemCat">
+            <option value="Websites">Websites</option>
+            <option value="Apps & Tools">Apps & Tools</option>
+            <option value="Gaming">Gaming</option>
+            <option value="Entertainment">Entertainment</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Rating (1 to 5)</label>
+          <input type="number" id="itemScore" min="1" max="5" step="0.1" value="5" required>
+        </div>
+        <div class="form-group">
+          <label>Your Review</label>
+          <textarea id="itemReview" rows="3" required placeholder="What did you like or dislike?"></textarea>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn-ghost" onclick="toggleModal(false)">Cancel</button>
+          <button type="submit" class="btn-primary">Post Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const defaultData = [
+      {
+        name: "GitHub",
+        domain: "github.com",
+        category: "Apps & Tools",
+        score: 4.9,
+        reviewsCount: 142,
+        latestReview: "Reliable code hosting and free static pages deployment with zero hassle."
+      },
+      {
+        name: "AniList",
+        domain: "anilist.co",
+        category: "Entertainment",
+        score: 4.7,
+        reviewsCount: 89,
+        latestReview: "Clean interface, fast API, and great community tracking tools."
+      },
+      {
+        name: "Brave Browser",
+        domain: "brave.com",
+        category: "Apps & Tools",
+        score: 4.6,
+        reviewsCount: 64,
+        latestReview: "Built-in ad blocking works right out of the box across desktop and mobile."
+      },
+      {
+        name: "StreamClutter Example",
+        domain: "example-stream.net",
+        category: "Websites",
+        score: 2.1,
+        reviewsCount: 19,
+        latestReview: "Too many pop-ups and broken links on the homepage."
+      }
+    ];
+
+    let items = JSON.parse(localStorage.getItem("trustIndexItems")) || defaultData;
+    let activeCategory = "All";
+
+    function getScoreClass(score) {
+      if (score >= 4.0) return "score-high";
+      if (score >= 2.5) return "score-mid";
+      return "score-low";
+    }
+
+    function getStars(score) {
+      const full = Math.round(score);
+      return "★".repeat(full) + "☆".repeat(5 - full);
+    }
+
+    function setCategory(cat) {
+      activeCategory = cat;
+      document.querySelectorAll(".cat-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.textContent === cat);
+      });
+      renderCards();
+    }
+
+    function renderCards() {
+      const query = document.getElementById("searchInput").value.toLowerCase();
+      const grid = document.getElementById("cardsGrid");
+
+      const filtered = items.filter(item => {
+        const matchesCat = activeCategory === "All" || item.category === activeCategory;
+        const matchesQuery = item.name.toLowerCase().includes(query) ||
+                             item.domain.toLowerCase().includes(query) ||
+                             item.latestReview.toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+      });
+
+      grid.innerHTML = filtered.map(item => `
+        <div class="card">
+          <div>
+            <div class="card-header">
+              <div>
+                <div class="card-title">${item.name}</div>
+                <div class="card-domain">${item.domain}</div>
+              </div>
+              <span class="badge-cat">${item.category}</span>
+            </div>
+            <div class="rating-row">
+              <span class="score-box ${getScoreClass(item.score)}">${Number(item.score).toFixed(1)}</span>
+              <span>${getStars(item.score)}</span>
+              <span style="font-size: 0.8rem; color: var(--muted);">(${item.reviewsCount} reviews)</span>
+            </div>
+          </div>
+          <div class="review-snippet">"${item.latestReview}"</div>
+        </div>
+      `).join("");
+    }
+
+    function toggleModal(show) {
+      document.getElementById("reviewModal").classList.toggle("open", show);
+    }
+
+    function addReview(e) {
+      e.preventDefault();
+      const newItem = {
+        name: document.getElementById("itemName").value.trim(),
+        domain: document.getElementById("itemDomain").value.trim(),
+        category: document.getElementById("itemCat").value,
+        score: parseFloat(document.getElementById("itemScore").value),
+        reviewsCount: 1,
+        latestReview: document.getElementById("itemReview").value.trim()
+      };
+
+      items.unshift(newItem);
+      localStorage.setItem("trustIndexItems", JSON.stringify(items));
+      document.getElementById("reviewForm").reset();
+      toggleModal(false);
+      renderCards();
+    }
+
+    renderCards();
+  </script>
+</body>
+</html>
