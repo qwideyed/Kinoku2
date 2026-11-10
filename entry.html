@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kinoku — Entry Profile & Reviews</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #090d16;
+      color: #f8fafc;
+    }
+    .tp-star {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      line-height: 1;
+      user-select: none;
+    }
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-emerald-500/20 selection:text-emerald-400">
+
+  <header class="sticky top-0 z-20 border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <div class="flex items-center gap-4 min-w-0">
+        <a href="index.html" class="flex items-center gap-2.5 group shrink-0">
+          <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-extrabold text-lg shadow-sm group-hover:bg-emerald-400 transition-colors">
+            ★
+          </div>
+          <div>
+            <span class="font-extrabold text-xl tracking-tight block leading-none">Kinoku</span>
+            <span class="text-[10px] text-slate-400 font-medium tracking-wide uppercase">Entry Profile</span>
+          </div>
+        </a>
+
+        <a href="index.html" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-medium text-slate-300 hover:text-white transition-colors">
+          ← All Listings
+        </a>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5">
+          <label for="entrySwitcher" class="hidden md:inline text-xs text-slate-400 font-medium">Entry:</label>
+          <select
+            id="entrySwitcher"
+            onchange="switchEntry(this.value)"
+            class="max-w-[150px] sm:max-w-[200px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-500"
+          ></select>
+        </div>
+
+        <button onclick="openReviewModal()" class="px-3.5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs sm:text-sm transition-colors shrink-0">
+          + Write a Review
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <section class="border-b border-slate-800/80 bg-slate-900/40">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-7">
+      <div class="mb-4 sm:hidden">
+        <a href="index.html" class="inline-flex items-center gap-1 text-xs font-medium text-slate-400 hover:text-emerald-400">
+          ← Back to All Listings
+        </a>
+      </div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="space-y-3 max-w-2xl">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span id="entryCategoryBadge" class="px-2.5 py-0.5 rounded-md bg-slate-800 text-slate-300 text-xs font-medium"></span>
+            <span id="entryPlatformBadge" class="px-2.5 py-0.5 rounded-md border border-slate-800 bg-slate-950 text-slate-400 text-xs"></span>
+            <span id="entrySafetyBadge" class="px-2.5 py-0.5 rounded-md border text-xs font-medium"></span>
+          </div>
+
+          <div class="flex items-baseline gap-3 flex-wrap">
+            <h1 id="entryTitle" class="text-2xl sm:text-4xl font-extrabold tracking-tight text-slate-100"></h1>
+            <a
+              id="entryVisitLink"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-4"
+            >
+              <span id="entryDomainText"></span> ↗
+            </a>
+          </div>
+
+          <p id="entryDescription" class="text-sm text-slate-300 leading-relaxed"></p>
+
+          <div id="aggregatedTagsContainer" class="pt-1 flex items-center gap-1.5 flex-wrap"></div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 flex items-center gap-5 shrink-0 self-start lg:self-center shadow-lg">
+          <div class="text-center pr-5 border-r border-slate-800">
+            <div class="text-[11px] uppercase tracking-wider font-semibold text-slate-400 mb-1">TrustScore</div>
+            <div id="entryScoreNumber" class="text-4xl sm:text-5xl font-extrabold tracking-tight text-slate-100">—</div>
+          </div>
+          <div class="space-y-2">
+            <div id="entryTierBadge" class="inline-block px-2.5 py-0.5 rounded text-xs font-bold">Unrated</div>
+            <div id="entryStarsRow"></div>
+            <p id="entryReviewCountText" class="text-xs text-slate-400">0 reviews</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 py-8 flex-1">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <aside class="lg:col-span-4 space-y-5">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-sm text-slate-100">Rating Breakdown</h2>
+            <button
+              id="clearStarFilterBtn"
+              onclick="setStarFilter(0)"
+              class="hidden text-xs font-medium text-emerald-400 hover:text-emerald-300"
+            >
+              Reset Filter
+            </button>
+          </div>
+          <div id="starBreakdownRows" class="space-y-2.5"></div>
+          <p class="text-[11px] text-slate-500 mt-4">Click any star bar to filter reviews by rating.</p>
+        </div>
+
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-3.5">
+          <div class="flex items-center justify-between">
+            <h2 class="font-bold text-sm text-slate-100">Entry Details</h2>
+            <button
+              onclick="openEditEntryModal()"
+              class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 transition-colors"
+            >
+              Edit Entry Info
+            </button>
+          </div>
+
+          <div class="text-xs space-y-2.5 border-t border-slate-800/80 pt-3">
+            <div class="flex justify-between gap-2">
+              <span class="text-slate-400">Entry Slug</span>
+              <span id="detailSlug" class="font-mono text-slate-200 truncate"></span>
+            </div>
+            <div class="flex justify-between gap-2">
+              <span class="text-slate-400">Category</span>
+              <span id="detailCategory" class="text-slate-200 font-medium"></span>
+            </div>
+            <div class="flex justify-between gap-2">
+              <span class="text-slate-400">Primary Platform</span>
+              <span id="detailPlatform" class="text-slate-200 font-medium"></span>
+            </div>
+            <div class="flex justify-between gap-2">
+              <span class="text-slate-400">Safety Status</span>
+              <span id="detailSafety" class="text-slate-200 font-medium"></span>
+            </div>
+            <div class="flex justify-between gap-2">
+              <span class="text-slate-400">Website / Domain</span>
+              <span id="detailDomain" class="text-slate-200 truncate"></span>
+            </div>
+            <div class="flex justify-between gap-2">
+              <span class="text-slate-400">Date Added</span>
+              <span id="detailAdded" class="text-slate-200"></span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <section class="lg:col-span-8 space-y-4">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div id="starFilterPills" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
+
+            <div class="flex items-center gap-2 shrink-0">
+              <label for="reviewSortSelect" class="text-xs text-slate-400 font-medium">Sort:</label>
+              <select
+                id="reviewSortSelect"
+                onchange="renderReviews()"
+                class="px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-800 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-500"
+              >
+                <option value="newest">Newest First</option>
+                <option value="highest">Highest Rated</option>
+                <option value="lowest">Lowest Rated</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <input
+              type="text"
+              id="reviewSearchInput"
+              oninput="renderReviews()"
+              placeholder="Search inside reviews by keyword, pros, cons, tag, or author..."
+              class="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs sm:text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+        </div>
+
+        <div id="reviewsFeed" class="space-y-3.5"></div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="border-t border-slate-800/80 py-6 text-center text-xs text-slate-500 mt-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>Kinoku — Static GitHub Pages Review Directory</span>
+      <a href="index.html" class="text-slate-400 hover:text-emerald-400 underline underline-offset-4">
+        ← Return to Main Directory
+      </a>
+    </div>
+  </footer>
+
+  <div id="toastBanner" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 border border-emerald-500/60 text-xs font-medium text-slate-100 shadow-xl"></div>
+
+  <div id="reviewModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4" onclick="closeReviewModal(event)">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div>
+          <h2 class="font-bold text-base text-slate-100">Write a Review for <span id="modalItemName" class="text-emerald-400"></span></h2>
+          <p class="text-xs text-slate-400">Share your honest rating, pros, cons, and experience tags.</p>
+        </div>
+        <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-200 text-sm px-2 py-1">✕</button>
+      </div>
+
+      <form id="entryReviewForm" onsubmit="submitEntryReview(event)" class="p-5 overflow-y-auto space-y-4">
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800/90 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1.5">Your Rating *</label>
+            <div class="flex items-center gap-2">
+              <div id="modalStarPicker" class="inline-flex items-center gap-1.5"></div>
+              <span id="modalStarLabel" class="text-xs font-semibold text-emerald-400 ml-1">5 ★ — Excellent</span>
+            </div>
+            <input type="hidden" id="modalReviewScore" value="5" />
+          </div>
+
+          <div class="sm:w-56">
+            <label class="block text-xs font-medium text-slate-300 mb-1">Reviewer Name / Alias</label>
+            <input
+              type="text"
+              id="modalReviewAuthor"
+              placeholder="Anonymous"
+              class="w-full px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-medium text-slate-300 mb-1">Review Title / Headline *</label>
+            <input
+              type="text"
+              id="modalReviewTitle"
+              required
+              placeholder="Summarize your experience..."
+              class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Platform Used *</label>
+            <select
+              id="modalReviewPlatform"
+              class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+            >
+              <option value="Web Browser">Web Browser</option>
+              <option value="Windows">Windows</option>
+              <option value="macOS">macOS</option>
+              <option value="Linux">Linux</option>
+              <option value="Android">Android</option>
+              <option value="iOS">iOS</option>
+              <option value="Browser Extension">Browser Extension</option>
+              <option value="Cross-Platform">Cross-Platform</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1.5">Safety & Experience Tags (Click to toggle)</label>
+          <div id="modalTagPills" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+          <div>
+            <label class="block text-xs font-medium text-emerald-400 mb-1">+ Pros (Optional)</label>
+            <input
+              type="text"
+              id="modalReviewPros"
+              placeholder="e.g. Clean layout, fast load times"
+              class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-red-400 mb-1">− Cons (Optional)</label>
+            <input
+              type="text"
+              id="modalReviewCons"
+              placeholder="e.g. Requires login, mobile bugs"
+              class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Detailed Review *</label>
+          <textarea
+            id="modalReviewText"
+            rows="4"
+            required
+            placeholder="Explain what you liked or disliked about this item..."
+            class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"
+          ></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeReviewModal()" class="px-4 py-2 rounded-lg border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-800">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs">
+            Publish Review
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="editEntryModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden items-center justify-center p-4" onclick="closeEditEntryModal(event)">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+      <div class="px-5 py-4 border-b border-slate-800 flex items-center justify-between">
+        <h2 class="font-bold text-base text-slate-100">Edit Entry Details</h2>
+        <button onclick="closeEditEntryModal()" class="text-slate-400 hover:text-slate-200 text-sm px-2 py-1">✕</button>
+      </div>
+
+      <form id="editEntryForm" onsubmit="saveEntryDetails(event)" class="p-5 space-y-3.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Name *</label>
+            <input type="text" id="editName" required class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Domain / URL *</label>
+            <input type="text" id="editDomain" required class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Category *</label>
+            <select id="editCategory" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Platform *</label>
+            <select id="editPlatform" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+              <option value="Web">Web</option>
+              <option value="Desktop App">Desktop App</option>
+              <option value="Mobile App">Mobile App</option>
+              <option value="Browser Extension">Browser Extension</option>
+              <option value="Game">Game</option>
+              <option value="Hardware">Hardware</option>
+              <option value="Service">Service</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-300 mb-1">Safety Status *</label>
+            <select id="editSafety" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+              <option value="Safe & Clean">Safe & Clean</option>
+              <option value="Adblock Recommended">Adblock Recommended</option>
+              <option value="Freemium / Paid">Freemium / Paid</option>
+              <option value="Account Required">Account Required</option>
+              <option value="NSFW / 18+">NSFW / 18+</option>
+              <option value="Caution">Caution</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-300 mb-1">Description</label>
+          <textarea id="editDescription" rows="3" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeEditEntryModal()" class="px-4 py-2 rounded-lg border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-800">
+            Cancel
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs">
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const ITEM_CATEGORIES = [
+      "Websites",
+      "Anime & Manga",
+      "Movies & TV",
+      "Gaming",
+      "Apps & Software",
+      "AI & Tools",
+      "Streaming",
+      "Shopping & Stores",
+      "Hardware & Tech",
+      "Security & Privacy",
+      "Communities & Social",
+      "Emulation & Archival",
+      "Other"
+    ];
+
+    const AVAILABLE_EXPERIENCE_TAGS = [
+      "Safe & Clean",
+      "Fast & Smooth",
+      "Ad-Free",
+      "Open Source",
+      "Good Free Tier",
+      "Heavy Ads / Pop-ups",
+      "Paywalled",
+      "NSFW",
+      "Buggy",
+      "Avoid / Scam"
+    ];
+
+    const PRIMARY_STORAGE_KEY = "kinoku_items_v2";
+    const LEGACY_KEYS = ["kinoku_items", "kinokuItems", "kinokuData"];
+
+    const DEFAULT_ITEMS = [
+      {
+        id: "github",
+        name: "GitHub",
+        domain: "github.com",
+        category: "Apps & Software",
+        platform: "Web",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Cloud-based Git repository hosting, open-source collaboration platform, and free static web hosting via GitHub Pages.",
+        reviews: []
+      },
+      {
+        id: "anilist",
+        name: "AniList",
+        domain: "anilist.co",
+        category: "Anime & Manga",
+        platform: "Web",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Modern anime and manga tracking database with customizable profile lists, seasonal charts, and a public GraphQL API.",
+        reviews: []
+      },
+      {
+        id: "mangadex",
+        name: "MangaDex",
+        domain: "mangadex.org",
+        category: "Anime & Manga",
+        platform: "Web",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Community-driven ad-free manga reader supporting multiple languages and scanlation groups.",
+        reviews: []
+      },
+      {
+        id: "brave-browser",
+        name: "Brave Browser",
+        domain: "brave.com",
+        category: "Security & Privacy",
+        platform: "Desktop App",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Privacy-focused Chromium web browser with built-in ad and tracker blocking out of the box.",
+        reviews: []
+      },
+      {
+        id: "vscode",
+        name: "Visual Studio Code",
+        domain: "code.visualstudio.com",
+        category: "Apps & Software",
+        platform: "Desktop App",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Lightweight, extensible source code editor supporting hundreds of programming languages and extensions.",
+        reviews: []
+      },
+      {
+        id: "steam",
+        name: "Steam",
+        domain: "store.steampowered.com",
+        category: "Gaming",
+        platform: "Desktop App",
+        safety: "Account Required",
+        added: "2025-01-15",
+        description: "Digital PC gaming storefront, community hub, workshop mod manager, and multiplayer platform.",
+        reviews: []
+      },
+      {
+        id: "chatgpt",
+        name: "ChatGPT",
+        domain: "chatgpt.com",
+        category: "AI & Tools",
+        platform: "Web",
+        safety: "Freemium / Paid",
+        added: "2025-01-15",
+        description: "Conversational AI assistant for coding, writing, brainstorming, and research.",
+        reviews: []
+      },
+      {
+        id: "letterboxd",
+        name: "Letterboxd",
+        domain: "letterboxd.com",
+        category: "Movies & TV",
+        platform: "Web",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Social film discovery, diary logging, and movie rating platform.",
+        reviews: []
+      },
+      {
+        id: "ublock-origin",
+        name: "uBlock Origin",
+        domain: "ublockorigin.com",
+        category: "Security & Privacy",
+        platform: "Browser Extension",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Open-source wide-spectrum content blocker for browsers with minimal CPU and memory footprint.",
+        reviews: []
+      },
+      {
+        id: "retroarch",
+        name: "RetroArch",
+        domain: "retroarch.com",
+        category: "Emulation & Archival",
+        platform: "Desktop App",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Cross-platform frontend for emulators, game engines, and media players.",
+        reviews: []
+      },
+      {
+        id: "discord",
+        name: "Discord",
+        domain: "discord.com",
+        category: "Communities & Social",
+        platform: "Desktop App",
+        safety: "Account Required",
+        added: "2025-01-15",
+        description: "Voice, video, and text communication service used by gaming and interest communities.",
+        reviews: []
+      },
+      {
+        id: "internet-archive",
+        name: "Internet Archive",
+        domain: "archive.org",
+        category: "Emulation & Archival",
+        platform: "Web",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Non-profit digital library offering free universal access to books, movies, software, and the Wayback Machine.",
+        reviews: []
+      },
+      {
+        id: "little-big-snake",
+        name: "Little Big Snake",
+        domain: "littlebigsnake.com",
+        category: "Gaming",
+        platform: "Game",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Multiplayer browser and mobile snake progression game with missions, skills, and leaderboards.",
+        reviews: []
+      },
+      {
+        id: "bullet-force",
+        name: "Bullet Force",
+        domain: "bulletforce.com",
+        category: "Gaming",
+        platform: "Game",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Fast-paced 3D multiplayer first-person shooter with custom loadouts and maps.",
+        reviews: []
+      },
+      {
+        id: "wikipedia",
+        name: "Wikipedia",
+        domain: "wikipedia.org",
+        category: "Websites",
+        platform: "Web",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Free multilingual open-collaborative online encyclopedia maintained by volunteer editors.",
+        reviews: []
+      },
+      {
+        id: "cloudflare",
+        name: "Cloudflare",
+        domain: "cloudflare.com",
+        category: "Security & Privacy",
+        platform: "Service",
+        safety: "Safe & Clean",
+        added: "2025-01-15",
+        description: "Global content delivery network, DNS, DDoS mitigation, and static Pages hosting platform.",
+        reviews: []
+      }
+    ];
+
+    function loadSyncedItems() {
+      let stored = null;
+      const allKeys = [PRIMARY_STORAGE_KEY, ...LEGACY_KEYS];
+      for (const k of allKeys) {
+        const raw = localStorage.getItem(k);
+        if (raw) {
+          try {
+            const parsed = JSON.parse(raw);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              stored = parsed;
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+
+      if (!stored) {
+        stored = JSON.parse(JSON.stringify(DEFAULT_ITEMS));
+      } else {
+        DEFAULT_ITEMS.forEach(def => {
+          const existing = stored.find(i => i.id === def.id);
+          if (!existing) {
+            stored.push(JSON.parse(JSON.stringify(def)));
+          } else {
+            if (!existing.description) existing.description = def.description;
+            if (!existing.added) existing.added = def.added;
+            if (!existing.platform) existing.platform = def.platform;
+            if (!existing.safety) existing.safety = def.safety;
+            if (!Array.isArray(existing.reviews)) existing.reviews = [];
+          }
+        });
+      }
+
+      saveSyncedItems(stored);
+      return stored;
+    }
+
+    function saveSyncedItems(list) {
+      const serialized = JSON.stringify(list);
+      localStorage.setItem(PRIMARY_STORAGE_KEY, serialized);
+      LEGACY_KEYS.forEach(k => localStorage.setItem(k, serialized));
+    }
+
+    let items = loadSyncedItems();
+    let currentItem = null;
+    let activeStarFilter = 0;
+    let modalStarValue = 5;
+    let selectedModalTags = new Set(["Safe & Clean"]);
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function showToast(msg) {
+      const el = document.getElementById("toastBanner");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+      clearTimeout(window.kinokuToastTimer);
+      window.kinokuToastTimer = setTimeout(() => {
+        el.classList.add("hidden");
+      }, 2800);
+    }
+
+    function getTier(score, count) {
+      if (!count) {
+        return {
+          bgHex: "#1e293b",
+          textHex: "#64748b",
+          badgeBg: "#1e293b",
+          badgeText: "#94a3b8",
+          label: "Unrated"
+        };
+      }
+      if (score >= 4.5) {
+        return {
+          bgHex: "#10b981",
+          textHex: "#ffffff",
+          badgeBg: "#10b981",
+          badgeText: "#052e16",
+          label: "Excellent"
+        };
+      }
+      if (score >= 3.5) {
+        return {
+          bgHex: "#84cc16",
+          textHex: "#ffffff",
+          badgeBg: "#84cc16",
+          badgeText: "#1a2e05",
+          label: "Great"
+        };
+      }
+      if (score >= 2.5) {
+        return {
+          bgHex: "#f59e0b",
+          textHex: "#ffffff",
+          badgeBg: "#f59e0b",
+          badgeText: "#451a03",
+          label: "Average"
+        };
+      }
+      return {
+        bgHex: "#ef4444",
+        textHex: "#ffffff",
+        badgeBg: "#ef4444",
+        badgeText: "#ffffff",
+        label: "Poor"
+      };
+    }
+
+    function renderSquareStars(score, count, sizeClass = "w-6 h-6 text-xs") {
+      const full = count ? Math.round(score) : 0;
+      const tier = getTier(score, count);
+      let html = '<div class="inline-flex items-center gap-1">';
+      for (let i = 1; i <= 5; i++) {
+        const active = i <= full;
+        const bg = active ? tier.bgHex : "#1e293b";
+        const fg = active ? tier.textHex : "#64748b";
+        html += `<span class="tp-star ${sizeClass}" style="background-color:${bg};color:${fg};">★</span>`;
+      }
+      html += "</div>";
+      return html;
+    }
+
+    function getSafetyBadgeStyle(safety) {
+      if (safety === "Safe & Clean") return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30";
+      if (safety === "Adblock Recommended") return "bg-amber-500/10 text-amber-400 border-amber-500/30";
+      if (safety === "Caution" || safety === "NSFW / 18+") return "bg-red-500/10 text-red-400 border-red-500/30";
+      return "bg-slate-800 text-slate-300 border-slate-700";
+    }
+
+    function resolveInitialEntry() {
+      const params = new URLSearchParams(window.location.search);
+      const requestedId = params.get("id");
+      if (requestedId) {
+        const found = items.find(i => i.id.toLowerCase() === requestedId.toLowerCase());
+        if (found) return found;
+      }
+      return items[0];
+    }
+
+    function switchEntry(id) {
+      const found = items.find(i => i.id === id);
+      if (!found) return;
+      currentItem = found;
+      activeStarFilter = 0;
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set("id", found.id);
+        window.history.replaceState({}, "", url);
+      } catch (e) {}
+      renderPage();
+    }
+
+    function populateEntrySwitcher() {
+      const switcher = document.getElementById("entrySwitcher");
+      switcher.innerHTML = items.map(item => {
+        const selected = currentItem && item.id === currentItem.id ? "selected" : "";
+        return `<option value="${escapeHtml(item.id)}" ${selected}>${escapeHtml(item.name)}</option>`;
+      }).join("");
+    }
+
+    function getEntryMetrics(item) {
+      const reviews = Array.isArray(item.reviews) ? item.reviews : [];
+      const count = reviews.length;
+      const avg = count ? reviews.reduce((s, r) => s + Number(r.score), 0) / count : 0;
+      const countsByStar = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+      reviews.forEach(r => {
+        const s = Math.min(5, Math.max(1, Math.round(Number(r.score))));
+        countsByStar[s] = (countsByStar[s] || 0) + 1;
+      });
+      return {
+        count,
+        avg: Number(avg.toFixed(1)),
+        countsByStar
+      };
+    }
+
+    function renderStarFilterPills() {
+      const container = document.getElementById("starFilterPills");
+      const options = [
+        { val: 0, label: "All" },
+        { val: 5, label: "5 ★" },
+        { val: 4, label: "4 ★" },
+        { val: 3, label: "3 ★" },
+        { val: 2, label: "2 ★" },
+        { val: 1, label: "1 ★" }
+      ];
+      container.innerHTML = options.map(opt => {
+        const active = activeStarFilter === opt.val;
+        const cls = active
+          ? "bg-emerald-500 text-slate-950 font-semibold border-emerald-500"
+          : "bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700 hover:text-slate-200";
+        return `<button onclick="setStarFilter(${opt.val})" class="px-3 py-1 rounded-full border text-xs whitespace-nowrap transition-colors ${cls}">${opt.label}</button>`;
+      }).join("");
+
+      const resetBtn = document.getElementById("clearStarFilterBtn");
+      if (activeStarFilter !== 0) {
+        resetBtn.classList.remove("hidden");
+      } else {
+        resetBtn.classList.add("hidden");
+      }
+    }
+
+    function setStarFilter(starVal) {
+      activeStarFilter = activeStarFilter === starVal ? 0 : starVal;
+      renderPage();
+    }
+
+    function renderPage() {
+      if (!currentItem) currentItem = resolveInitialEntry();
+      document.title = `${currentItem.name} — Reviews & TrustScore | Kinoku`;
+      populateEntrySwitcher();
+
+      const { count, avg, countsByStar } = getEntryMetrics(currentItem);
+      const tier = getTier(avg, count);
+
+      document.getElementById("entryCategoryBadge").textContent = currentItem.category || "Websites";
+      document.getElementById("entryPlatformBadge").textContent = currentItem.platform || "Web";
+
+      const safetyEl = document.getElementById("entrySafetyBadge");
+      const safetyVal = currentItem.safety || "Safe & Clean";
+      safetyEl.textContent = safetyVal;
+      safetyEl.className = `px-2.5 py-0.5 rounded-md border text-xs font-medium ${getSafetyBadgeStyle(safetyVal)}`;
+
+      document.getElementById("entryTitle").textContent = currentItem.name;
+      document.getElementById("entryDomainText").textContent = currentItem.domain;
+
+      const rawDomain = String(currentItem.domain || "").trim();
+      const href = rawDomain.startsWith("http") ? rawDomain : ("https:" + "//" + rawDomain);
+      document.getElementById("entryVisitLink").href = href;
+
+      document.getElementById("entryDescription").textContent =
+        currentItem.description || `Community reviews, safety ratings, and user feedback for ${currentItem.name} (${currentItem.domain}).`;
+
+      document.getElementById("entryScoreNumber").textContent = count ? avg.toFixed(1) : "—";
+
+      const tierBadge = document.getElementById("entryTierBadge");
+      tierBadge.textContent = tier.label;
+      tierBadge.style.backgroundColor = tier.badgeBg;
+      tierBadge.style.color = tier.badgeText;
+
+      document.getElementById("entryStarsRow").innerHTML = renderSquareStars(avg, count, "w-6 h-6 text-xs");
+      document.getElementById("entryReviewCountText").textContent =
+        count === 0 ? "No reviews yet" : `Based on ${count} ${count === 1 ? "review" : "reviews"}`;
+
+      const tagFreq = {};
+      (currentItem.reviews || []).forEach(r => {
+        if (Array.isArray(r.tags)) {
+          r.tags.forEach(t => {
+            tagFreq[t] = (tagFreq[t] || 0) + 1;
+          });
+        }
+      });
+      const sortedTags = Object.entries(tagFreq).sort((a, b) => b[1] - a[1]);
+      const aggContainer = document.getElementById("aggregatedTagsContainer");
+      if (sortedTags.length === 0) {
+        aggContainer.innerHTML = `<span class="text-xs text-slate-500">Community tags will appear here once reviews are submitted.</span>`;
+      } else {
+        aggContainer.innerHTML = sortedTags.map(([tag, num]) => `
+          <span class="px-2.5 py-0.5 rounded-full bg-slate-800/90 border border-slate-700 text-[11px] text-slate-200 font-medium">
+            ${escapeHtml(tag)} <span class="text-emerald-400 font-bold">×${num}</span>
+          </span>
+        `).join("");
+      }
+
+      const breakdownEl = document.getElementById("starBreakdownRows");
+      let barsHtml = "";
+      for (let s = 5; s >= 1; s--) {
+        const c = countsByStar[s] || 0;
+        const pct = count ? Math.round((c / count) * 100) : 0;
+        const rowTier = getTier(s, c);
+        const isSelected = activeStarFilter === s;
+        const rowBorder = isSelected ? "border-emerald-500 bg-slate-800/80" : "border-transparent hover:bg-slate-800/40";
+        barsHtml += `
+          <button
+            type="button"
+            onclick="setStarFilter(${s})"
+            class="w-full flex items-center gap-2.5 p-1.5 rounded-lg border text-left transition-colors ${rowBorder}"
+          >
+            <span class="text-xs font-semibold text-slate-300 w-9 shrink-0">${s} ★</span>
+            <div class="flex-1 h-2.5 rounded-full bg-slate-950 overflow-hidden border border-slate-800/80">
+              <div class="h-full rounded-full transition-all duration-300" style="width:${pct}%;background-color:${rowTier.bgHex};"></div>
+            </div>
+            <span class="text-xs text-slate-400 w-16 text-right shrink-0">${pct}% (${c})</span>
+          </button>
+        `;
+      }
+      breakdownEl.innerHTML = barsHtml;
+
+      document.getElementById("detailSlug").textContent = currentItem.id;
+      document.getElementById("detailCategory").textContent = currentItem.category || "Websites";
+      document.getElementById("detailPlatform").textContent = currentItem.platform || "Web";
+      document.getElementById("detailSafety").textContent = currentItem.safety || "Safe & Clean";
+      document.getElementById("detailDomain").textContent = currentItem.domain;
+      document.getElementById("detailAdded").textContent = currentItem.added || "2025-01-15";
+
+      renderStarFilterPills();
+      renderReviews();
+    }
+
+    function renderReviews() {
+      const feed = document.getElementById("reviewsFeed");
+      const query = document.getElementById("reviewSearchInput").value.trim().toLowerCase();
+      const sortBy = document.getElementById("reviewSortSelect").value;
+      const allReviews = Array.isArray(currentItem.reviews) ? currentItem.reviews : [];
+
+      if (allReviews.length === 0) {
+        feed.innerHTML = `
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-10 text-center space-y-3">
+            <div class="w-11 h-11 rounded-xl bg-slate-800/90 text-slate-400 flex items-center justify-center mx-auto text-lg font-bold">★</div>
+            <h3 class="font-bold text-base text-slate-200">No reviews yet for ${escapeHtml(currentItem.name)}</h3>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
+              This listing starts with a clean slate. Share your experience to calculate the first community TrustScore.
+            </p>
+            <div class="pt-1">
+              <button
+                onclick="openReviewModal()"
+                class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs sm:text-sm transition-colors"
+              >
+                + Be the First to Review
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const filtered = allReviews.filter(r => {
+        const starMatch = activeStarFilter === 0 || Math.round(Number(r.score)) === activeStarFilter;
+        const textMatch = !query ||
+          (r.title && r.title.toLowerCase().includes(query)) ||
+          (r.text && r.text.toLowerCase().includes(query)) ||
+          (r.author && r.author.toLowerCase().includes(query)) ||
+          (r.pros && r.pros.toLowerCase().includes(query)) ||
+          (r.cons && r.cons.toLowerCase().includes(query)) ||
+          (Array.isArray(r.tags) && r.tags.some(t => t.toLowerCase().includes(query)));
+        return starMatch && textMatch;
+      });
+
+      filtered.sort((a, b) => {
+        if (sortBy === "highest") return Number(b.score) - Number(a.score);
+        if (sortBy === "lowest") return Number(a.score) - Number(b.score);
+        return String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || ""));
+      });
+
+      if (filtered.length === 0) {
+        feed.innerHTML = `
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
+            <p class="text-sm text-slate-400">No reviews match your current star or keyword filter.</p>
+            <button onclick="setStarFilter(0); document.getElementById('reviewSearchInput').value=''; renderReviews();" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200">
+              Clear Review Filters
+            </button>
+          </div>
+        `;
+        return;
+      }
+
+      feed.innerHTML = filtered.map(r => {
+        const scoreNum = Number(r.score) || 5;
+        const prosHtml = r.pros
+          ? `<div class="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300"><span class="font-bold">+ Pros:</span> ${escapeHtml(r.pros)}</div>`
+          : "";
+        const consHtml = r.cons
+          ? `<div class="p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-xs text-red-300"><span class="font-bold">− Cons:</span> ${escapeHtml(r.cons)}</div>`
+          : "";
+        const tagsHtml = Array.isArray(r.tags) && r.tags.length > 0
+          ? `<div class="flex flex-wrap gap-1.5 pt-2">${r.tags.map(t => `<span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[11px] font-medium">${escapeHtml(t)}</span>`).join("")}</div>`
+          : "";
+
+        return `
+          <article class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 space-y-3">
+            <div class="flex items-start justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-xs text-emerald-400 uppercase shrink-0">
+                  ${escapeHtml((r.author || "A").slice(0, 2))}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-bold text-sm text-slate-100">${escapeHtml(r.author || "Anonymous")}</span>
+                    <span class="px-2 py-0.5 rounded bg-slate-950 border border-slate-800 text-[11px] text-slate-400">
+                      ${escapeHtml(r.platform || currentItem.platform || "Web Browser")}
+                    </span>
+                  </div>
+                  <p class="text-[11px] text-slate-500">${escapeHtml(r.date || "Recent")}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2">
+                ${renderSquareStars(scoreNum, 1, "w-5 h-5 text-[11px]")}
+                <button
+                  onclick="deleteReview('${escapeHtml(r.id)}')"
+                  title="Delete Review"
+                  class="px-2 py-1 rounded hover:bg-red-500/10 text-slate-500 hover:text-red-400 text-xs transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div class="space-y-1.5 pt-1">
+              <h3 class="font-bold text-base text-slate-100">${escapeHtml(r.title || "User Review")}</h3>
+              <p class="text-sm text-slate-300 leading-relaxed whitespace-pre-line">${escapeHtml(r.text)}</p>
+            </div>
+
+            ${(prosHtml || consHtml) ? `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">${prosHtml}${consHtml}</div>` : ""}
+            ${tagsHtml}
+          </article>
+        `;
+      }).join("");
+    }
+
+    function setModalStar(val) {
+      modalStarValue = Number(val);
+      document.getElementById("modalReviewScore").value = modalStarValue;
+      const labels = {
+        5: "5 ★ — Excellent",
+        4: "4 ★ — Great",
+        3: "3 ★ — Average",
+        2: "2 ★ — Poor",
+        1: "1 ★ — Bad"
+      };
+      const tier = getTier(modalStarValue, 1);
+      const picker = document.getElementById("modalStarPicker");
+      let html = "";
+      for (let i = 1; i <= 5; i++) {
+        const active = i <= modalStarValue;
+        const bg = active ? tier.bgHex : "#1e293b";
+        const fg = active ? tier.textHex : "#64748b";
+        html += `<button type="button" onclick="setModalStar(${i})" class="tp-star w-7 h-7 text-sm transition-transform hover:scale-105" style="background-color:${bg};color:${fg};">★</button>`;
+      }
+      picker.innerHTML = html;
+      const labelEl = document.getElementById("modalStarLabel");
+      labelEl.textContent = labels[modalStarValue];
+      labelEl.style.color = tier.bgHex;
+    }
+
+    function renderModalTagPills() {
+      const container = document.getElementById("modalTagPills");
+      container.innerHTML = AVAILABLE_EXPERIENCE_TAGS.map(tag => {
+        const active = selectedModalTags.has(tag);
+        const cls = active
+          ? "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-semibold"
+          : "bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700 hover:text-slate-200";
+        return `<button type="button" onclick="toggleModalTag('${escapeHtml(tag)}')" class="px-2.5 py-1 rounded-lg border text-xs transition-colors ${cls}">${escapeHtml(tag)}</button>`;
+      }).join("");
+    }
+
+    function toggleModalTag(tag) {
+      if (selectedModalTags.has(tag)) {
+        selectedModalTags.delete(tag);
+      } else {
+        selectedModalTags.add(tag);
+      }
+      renderModalTagPills();
+    }
+
+    function openReviewModal() {
+      document.getElementById("entryReviewForm").reset();
+      document.getElementById("modalItemName").textContent = currentItem.name;
+      selectedModalTags = new Set(["Safe & Clean"]);
+      setModalStar(5);
+      renderModalTagPills();
+      const modal = document.getElementById("reviewModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeReviewModal(e) {
+      if (e && e.target.id !== "reviewModal") return;
+      const modal = document.getElementById("reviewModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function submitEntryReview(e) {
+      e.preventDefault();
+      const score = Number(document.getElementById("modalReviewScore").value) || 5;
+      const author = document.getElementById("modalReviewAuthor").value.trim() || "Anonymous";
+      const title = document.getElementById("modalReviewTitle").value.trim();
+      const platform = document.getElementById("modalReviewPlatform").value;
+      const pros = document.getElementById("modalReviewPros").value.trim();
+      const cons = document.getElementById("modalReviewCons").value.trim();
+      const text = document.getElementById("modalReviewText").value.trim();
+
+      const reviewObj = {
+        id: "rev-" + Date.now(),
+        author,
+        score,
+        title,
+        platform,
+        pros,
+        cons,
+        text,
+        tags: Array.from(selectedModalTags),
+        date: new Date().toISOString().split("T")[0]
+      };
+
+      if (!Array.isArray(currentItem.reviews)) {
+        currentItem.reviews = [];
+      }
+      currentItem.reviews.unshift(reviewObj);
+      saveSyncedItems(items);
+      closeReviewModal();
+      renderPage();
+      showToast(`Review published for ${currentItem.name}!`);
+    }
+
+    function deleteReview(reviewId) {
+      if (!currentItem || !Array.isArray(currentItem.reviews)) return;
+      currentItem.reviews = currentItem.reviews.filter(r => r.id !== reviewId);
+      saveSyncedItems(items);
+      renderPage();
+      showToast("Review removed.");
+    }
+
+    function openEditEntryModal() {
+      const catSelect = document.getElementById("editCategory");
+      catSelect.innerHTML = ITEM_CATEGORIES.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+
+      document.getElementById("editName").value = currentItem.name || "";
+      document.getElementById("editDomain").value = currentItem.domain || "";
+      document.getElementById("editCategory").value = ITEM_CATEGORIES.includes(currentItem.category) ? currentItem.category : "Websites";
+      document.getElementById("editPlatform").value = currentItem.platform || "Web";
+      document.getElementById("editSafety").value = currentItem.safety || "Safe & Clean";
+      document.getElementById("editDescription").value = currentItem.description || "";
+
+      const modal = document.getElementById("editEntryModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeEditEntryModal(e) {
+      if (e && e.target.id !== "editEntryModal") return;
+      const modal = document.getElementById("editEntryModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function saveEntryDetails(e) {
+      e.preventDefault();
+      currentItem.name = document.getElementById("editName").value.trim();
+      currentItem.domain = document.getElementById("editDomain").value.trim();
+      currentItem.category = document.getElementById("editCategory").value;
+      currentItem.platform = document.getElementById("editPlatform").value;
+      currentItem.safety = document.getElementById("editSafety").value;
+      currentItem.description = document.getElementById("editDescription").value.trim();
+
+      saveSyncedItems(items);
+      closeEditEntryModal();
+      renderPage();
+      showToast("Entry details updated!");
+    }
+
+    currentItem = resolveInitialEntry();
+    renderPage();
+  </script>
+</body>
+</html>
