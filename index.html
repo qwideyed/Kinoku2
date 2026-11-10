@@ -1,670 +1,197 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kinoku — Open Trust & Review Directory</title>
-  <!-- Tailwind CSS CDN -->
+  <title>Kinoku — Reviews for Websites & Digital Tools</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          colors: {
-            oled: {
-              bg: '#090b10',
-              surface: '#11151f',
-              elevated: '#171c29',
-              border: '#1c2230',
-              hover: '#232a3b'
-            }
-          }
-        }
-      }
-    };
-  </script>
-
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* Theme CSS Variables for seamless Dark/Light switching */
-    :root {
-      --bg-main: #f8fafc;
-      --bg-surface: #ffffff;
-      --bg-elevated: #f1f5f9;
-      --bg-glass: rgba(255, 255, 255, 0.86);
-      --border-subtle: #e2e8f0;
-      --border-hover: #cbd5e1;
-      --text-primary: #0f172a;
-      --text-secondary: #475569;
-      --text-muted: #64748b;
-      --shadow-card: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
-    }
-
-    html.dark {
-      --bg-main: #090b10;
-      --bg-surface: #11151f;
-      --bg-elevated: #171c29;
-      --bg-glass: rgba(17, 21, 31, 0.84);
-      --border-subtle: #1c2230;
-      --border-hover: #2e384d;
-      --text-primary: #f8fafc;
-      --text-secondary: #cbd5e1;
-      --text-muted: #94a3b8;
-      --shadow-card: 0 8px 30px -4px rgba(0, 0, 0, 0.45);
-    }
-
     body {
-      background-color: var(--bg-main);
-      color: var(--text-primary);
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      transition: background-color 0.2s ease, color 0.2s ease;
-      overflow-x: hidden;
+      font-family: 'Inter', system-ui, sans-serif;
+      background-color: #090d16;
+      color: #f8fafc;
     }
-
-    .theme-surface {
-      background-color: var(--bg-surface);
-      border-color: var(--border-subtle);
-      box-shadow: var(--shadow-card);
-    }
-
-    .theme-elevated {
-      background-color: var(--bg-elevated);
-      border-color: var(--border-subtle);
-    }
-
-    .theme-glass {
-      background-color: var(--bg-glass);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border-color: var(--border-subtle);
-    }
-
-    .theme-border {
-      border-color: var(--border-subtle);
-    }
-
-    .theme-text-secondary {
-      color: var(--text-secondary);
-    }
-
-    .theme-text-muted {
-      color: var(--text-muted);
-    }
-
-    /* Card interactive hover effect */
-    .directory-card {
-      transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.18s ease, box-shadow 0.18s ease;
-    }
-    .directory-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--border-hover);
-    }
-
-    /* Trustpilot-style square star blocks */
-    .tp-star-box {
+    .tp-star {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       border-radius: 4px;
       color: #ffffff;
-      transition: transform 0.12s ease, background-color 0.15s ease;
-    }
-
-    /* Custom Scrollbars */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: var(--bg-main);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--border-hover);
-      border-radius: 9999px;
-    }
-
-    /* Subtle Hero Mesh Gradient */
-    .hero-glow {
-      background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12) 0%, rgba(59, 130, 246, 0.05) 38%, transparent 72%);
+      font-size: 0.75rem;
+      line-height: 1;
     }
   </style>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-emerald-500/20 selection:text-emerald-400">
 
-  <!-- ==================== STICKY GLASSMORPHIC HEADER ==================== -->
-  <header class="sticky top-0 z-30 border-b theme-glass">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
-      
-      <!-- Brand Logo & Quick Stats Pill -->
-      <div class="flex items-center gap-4">
-        <button onclick="resetAllFilters()" class="flex items-center gap-2.5 text-left group focus:outline-none" title="Reset filters & return home">
-          <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-            <!-- Kinoku Shield-Star Emblem -->
-            <svg class="w-5 h-5 text-slate-950" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L4 5.5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5.5L12 2zm0 4.3l1.82 3.69 4.08.59-2.95 2.88.7 4.06L12 15.6l-3.65 1.92.7-4.06-2.95-2.88 4.08-.59L12 6.3z"/>
-            </svg>
-          </div>
-          <div>
-            <div class="flex items-center gap-1.5">
-              <span class="font-extrabold text-lg tracking-tight">Kinoku</span>
-              <span class="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/25 font-semibold">Index</span>
-            </div>
-            <p class="text-[11px] theme-text-muted hidden sm:block leading-none">Open Web & Tech Trust Directory</p>
-          </div>
-        </button>
-
-        <!-- Live Platform Metrics Pill (Desktop) -->
-        <div class="hidden xl:flex items-center gap-3 px-3.5 py-1.5 rounded-full border theme-elevated text-xs">
-          <div class="flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span class="theme-text-muted">Listings:</span>
-            <strong id="statTotalListings" class="font-semibold">12</strong>
-          </div>
-          <span class="opacity-25">|</span>
-          <div class="flex items-center gap-1">
-            <span class="theme-text-muted">Reviews:</span>
-            <strong id="statTotalReviews" class="font-semibold">0</strong>
-          </div>
-          <span class="opacity-25">|</span>
-          <div class="flex items-center gap-1">
-            <span class="theme-text-muted">Avg TrustScore:</span>
-            <strong id="statAvgScore" class="font-semibold text-emerald-400">0.0</strong>
-          </div>
+  <header class="sticky top-0 z-20 border-b border-slate-800/80 bg-[#090d16]/90 backdrop-blur-md">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <button onclick="resetFilters()" class="flex items-center gap-2.5 text-left focus:outline-none">
+        <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-extrabold text-lg shadow-sm">
+          ★
         </div>
-      </div>
-
-      <!-- Right Navigation Controls -->
-      <div class="flex items-center gap-2 sm:gap-2.5">
-        <!-- Saved / Bookmarks Filter Button -->
-        <button id="bookmarkFilterBtn" onclick="toggleBookmarkFilter()" class="px-3 py-1.5 rounded-lg border theme-elevated text-xs font-medium flex items-center gap-1.5 hover:border-amber-500/50 transition-colors" title="Filter by Saved Bookmarks">
-          <svg id="bookmarkHeaderIcon" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-          </svg>
-          <span class="hidden md:inline">Saved</span>
-          <span id="savedCountBadge" class="px-1.5 py-0.2 rounded-full text-[11px] font-mono bg-amber-500/15 text-amber-400">0</span>
-        </button>
-
-        <!-- GitHub Pages JSON Data Manager Button -->
-        <button onclick="openJsonModal()" class="px-3 py-1.5 rounded-lg border theme-elevated text-xs font-medium flex items-center gap-1.5 hover:border-emerald-500/40 transition-colors" title="Export or Import JSON for GitHub Pages">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-          </svg>
-          <span class="hidden lg:inline">Manage Data</span>
-        </button>
-
-        <!-- + Add Listing Button -->
-        <button onclick="openSubmissionModal('listing')" class="px-3 py-1.5 rounded-lg border theme-elevated text-xs font-semibold flex items-center gap-1.5 hover:border-emerald-500/50 transition-colors">
-          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-          </svg>
-          <span class="hidden sm:inline">Add Listing</span>
-        </button>
-
-        <!-- + Write Review Primary CTA -->
-        <button onclick="openSubmissionModal('review')" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs sm:text-sm flex items-center gap-1.5 shadow-lg shadow-emerald-500/20 transition-all active:scale-95">
-          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-          </svg>
-          <span>Write Review</span>
-        </button>
-
-        <!-- Theme Toggle (OLED Dark / Crisp Light) -->
-        <button onclick="toggleTheme()" id="themeToggleBtn" class="p-2 rounded-lg border theme-elevated hover:border-emerald-500/40 transition-colors" aria-label="Toggle color theme" title="Toggle Dark/Light Mode">
-          <!-- Sun icon (shown in dark mode) -->
-          <svg id="themeIconSun" class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
-          </svg>
-          <!-- Moon icon (shown in light mode) -->
-          <svg id="themeIconMoon" class="w-4 h-4 text-slate-700 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
-          </svg>
-        </button>
-      </div>
+        <span class="font-extrabold text-xl tracking-tight">Kinoku</span>
+      </button>
+      <button onclick="openWriteModal()" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs sm:text-sm transition-colors">
+        + Write a Review
+      </button>
     </div>
   </header>
 
-  <!-- ==================== HERO & LIVE SEARCH SECTION ==================== -->
-  <section class="relative hero-glow border-b theme-border pt-8 pb-7 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-4xl mx-auto text-center">
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 mb-3">
-        <span>★ Community-Verified Trust Ratings</span>
-        <span class="opacity-40">•</span>
-        <span>Zero Sponsored Placements</span>
-      </div>
+  <section class="max-w-3xl mx-auto w-full px-4 sm:px-6 pt-10 pb-6 text-center">
+    <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-2">
+      Community Reviews for the Web & Beyond
+    </h1>
+    <p class="text-slate-400 text-sm sm:text-base mb-6">
+      Honest ratings for websites, apps, anime platforms, and games.
+    </p>
+    <div class="relative">
+      <input
+        type="text"
+        id="searchInput"
+        oninput="render()"
+        placeholder="Search by name, domain, or review keyword..."
+        class="w-full px-4 py-3.5 rounded-xl bg-slate-900 border border-slate-800 text-sm sm:text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+      />
+    </div>
+  </section>
 
-      <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-2.5">
-        Discover & Rate <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Websites, Apps, Games & Gear</span>
-      </h1>
-      <p class="text-sm sm:text-base theme-text-muted max-w-2xl mx-auto mb-6">
-        Transparent, community-driven TrustScores with detailed pros, cons, and safety flags. Hosted statically on GitHub Pages.
-      </p>
-
-      <!-- Search Input Bar with '/' Shortcut -->
-      <div class="relative max-w-2xl mx-auto mb-4">
-        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-          <svg class="w-5 h-5 theme-text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-        </div>
-        <input
-          type="text"
-          id="mainSearchInput"
-          oninput="handleSearchInput(this.value)"
-          placeholder="Search websites, domains (e.g., github.com, anilist), tags, or reviews..."
-          class="w-full pl-11 pr-20 py-3.5 rounded-xl border theme-surface text-sm sm:text-base focus:outline-none focus:border-emerald-500 transition-colors"
-        />
-        <div class="absolute inset-y-0 right-0 pr-3 flex items-center gap-1.5">
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden px-2 py-1 rounded text-xs theme-elevated theme-text-muted hover:text-emerald-400">
-            Clear
-          </button>
-          <kbd class="hidden sm:inline-block px-2 py-1 text-[11px] font-mono rounded border theme-elevated theme-text-muted">/</kbd>
-        </div>
-      </div>
-
-      <!-- Trending Quick-Filter Tags -->
-      <div class="flex items-center justify-center flex-wrap gap-1.5 text-xs">
-        <span class="theme-text-muted mr-1">Trending tags:</span>
-        <button onclick="toggleTagFilter('Open Source')" data-tag="Open Source" class="tag-chip px-2.5 py-1 rounded-full border theme-elevated theme-text-secondary hover:border-emerald-500/50 transition-all">#Open Source</button>
-        <button onclick="toggleTagFilter('Ad-Free')" data-tag="Ad-Free" class="tag-chip px-2.5 py-1 rounded-full border theme-elevated theme-text-secondary hover:border-emerald-500/50 transition-all">#Ad-Free</button>
-        <button onclick="toggleTagFilter('Fast UI')" data-tag="Fast UI" class="tag-chip px-2.5 py-1 rounded-full border theme-elevated theme-text-secondary hover:border-emerald-500/50 transition-all">#Fast UI</button>
-        <button onclick="toggleTagFilter('Privacy')" data-tag="Privacy" class="tag-chip px-2.5 py-1 rounded-full border theme-elevated theme-text-secondary hover:border-emerald-500/50 transition-all">#Privacy</button>
-        <button onclick="toggleTagFilter('Multiplayer')" data-tag="Multiplayer" class="tag-chip px-2.5 py-1 rounded-full border theme-elevated theme-text-secondary hover:border-emerald-500/50 transition-all">#Multiplayer</button>
-        <button onclick="toggleTagFilter('Popup Warning')" data-tag="Popup Warning" class="tag-chip px-2.5 py-1 rounded-full border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:border-rose-500 transition-all">⚠ #Popup Warning</button>
+  <section class="max-w-6xl mx-auto w-full px-4 sm:px-6 pb-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80">
+      <div id="categoryBar" class="flex items-center gap-1.5 flex-wrap"></div>
+      <div class="flex items-center gap-2 shrink-0">
+        <label for="sortSelect" class="text-xs text-slate-400 font-medium">Sort:</label>
+        <select
+          id="sortSelect"
+          onchange="render()"
+          class="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-200 focus:outline-none focus:border-emerald-500"
+        >
+          <option value="highest">Highest Rated</option>
+          <option value="most">Most Reviewed</option>
+          <option value="lowest">Lowest Rated</option>
+        </select>
       </div>
     </div>
   </section>
 
-  <!-- ==================== FILTER & CONTROL BAR ==================== -->
-  <section class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-4">
-    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b theme-border">
-      
-      <!-- Category Tabs with Live Counts -->
-      <div id="categoryTabsContainer" class="flex items-center gap-1.5 overflow-x-auto pb-1 lg:pb-0 no-scrollbar">
-        <!-- Populated dynamically by JS -->
-      </div>
-
-      <!-- Sort & Minimum Rating Controls -->
-      <div class="flex flex-wrap items-center gap-2.5">
-        <!-- Minimum TrustScore Tier Filter -->
-        <div class="flex items-center gap-1.5 text-xs">
-          <label for="ratingFilterSelect" class="theme-text-muted font-medium">Trust Tier:</label>
-          <select id="ratingFilterSelect" onchange="handleRatingFilterChange(this.value)" class="px-3 py-1.5 rounded-lg border theme-surface text-xs font-medium focus:outline-none focus:border-emerald-500">
-            <option value="all">All Ratings</option>
-            <option value="4.5">4.5+ Excellent (Emerald)</option>
-            <option value="3.5">3.5+ Great & Above</option>
-            <option value="low">Under 3.0 (Caution / Poor)</option>
-          </select>
-        </div>
-
-        <!-- Sort Selector -->
-        <div class="flex items-center gap-1.5 text-xs">
-          <label for="sortSelect" class="theme-text-muted font-medium">Sort by:</label>
-          <select id="sortSelect" onchange="handleSortChange(this.value)" class="px-3 py-1.5 rounded-lg border theme-surface text-xs font-medium focus:outline-none focus:border-emerald-500">
-            <option value="highest">Highest Rated</option>
-            <option value="most_reviewed">Most Reviewed</option>
-            <option value="recent">Recently Reviewed</option>
-            <option value="lowest">Lowest Rated (Flagged First)</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <!-- Active Filter Status Bar -->
-    <div id="activeFilterBanner" class="hidden items-center justify-between gap-2 mt-3 px-3.5 py-2 rounded-lg border border-emerald-500/25 bg-emerald-500/5 text-xs">
-      <div id="activeFilterText" class="flex items-center flex-wrap gap-2"></div>
-      <button onclick="resetAllFilters()" class="text-emerald-400 hover:underline font-semibold shrink-0">Reset All Filters</button>
-    </div>
-  </section>
-
-  <!-- ==================== DIRECTORY CARDS GRID ==================== -->
-  <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-4 flex-1">
-    <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-      <!-- Populated dynamically by JS -->
-    </div>
-
-    <!-- Empty State -->
-    <div id="emptyStateBox" class="hidden text-center py-16 px-4 rounded-2xl border theme-surface my-4 max-w-lg mx-auto">
-      <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
-      </div>
-      <h3 class="text-lg font-bold mb-1">No matching listings found</h3>
-      <p class="text-xs sm:text-sm theme-text-muted mb-5">We couldn't find any items matching your active filters. Try clearing your search or add a new listing to Kinoku.</p>
-      <div class="flex items-center justify-center gap-3">
-        <button onclick="resetAllFilters()" class="px-4 py-2 rounded-lg border theme-elevated text-xs font-semibold hover:border-emerald-500/40">Reset Filters</button>
-        <button onclick="openSubmissionModal('listing')" class="px-4 py-2 rounded-lg bg-emerald-500 text-slate-950 text-xs font-semibold hover:bg-emerald-400">+ Add New Listing</button>
-      </div>
+  <main class="max-w-6xl mx-auto w-full px-4 sm:px-6 pb-16 flex-1">
+    <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    <div id="emptyState" class="hidden text-center py-14 bg-slate-900/50 border border-slate-800 rounded-2xl">
+      <p class="text-slate-400 text-sm mb-3">No matching items found.</p>
+      <button onclick="resetFilters()" class="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold">
+        Reset Filters
+      </button>
     </div>
   </main>
 
-  <!-- ==================== TRUST TIER LEGEND & FOOTER ==================== -->
-  <footer class="border-t theme-border mt-16 py-8 px-4 sm:px-6 lg:px-8 text-xs theme-text-muted">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-      <div>
-        <div class="flex items-center gap-2 font-bold text-sm text-emerald-400 mb-1">
-          <span>★ Kinoku TrustScore System</span>
-        </div>
-        <p class="max-w-md">Ratings are dynamically computed from individual community reviews. Every changeset is stored locally and can be exported as static JSON for GitHub Pages.</p>
-      </div>
-
-      <!-- Trustpilot Color Tier Legend -->
-      <div class="flex flex-wrap items-center gap-3">
-        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border theme-elevated">
-          <span class="w-3 h-3 rounded-sm bg-[#10b981] inline-block"></span>
-          <span><strong>4.5–5.0</strong> Excellent</span>
-        </div>
-        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border theme-elevated">
-          <span class="w-3 h-3 rounded-sm bg-[#84cc16] inline-block"></span>
-          <span><strong>3.5–4.4</strong> Great</span>
-        </div>
-        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border theme-elevated">
-          <span class="w-3 h-3 rounded-sm bg-[#f59e0b] inline-block"></span>
-          <span><strong>2.5–3.4</strong> Average</span>
-        </div>
-        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md border theme-elevated">
-          <span class="w-3 h-3 rounded-sm bg-[#ef4444] inline-block"></span>
-          <span><strong>1.0–2.4</strong> Poor</span>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ==================== 1. DETAILED TRUST PROFILE MODAL / DRAWER ==================== -->
-  <div id="profileModalOverlay" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-2 sm:p-4 overflow-y-auto" onclick="handleBackdropClick(event, 'profileModalOverlay')">
-    <div class="theme-surface border rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden shadow-2xl my-auto" onclick="event.stopPropagation()">
-      
-      <!-- Profile Modal Top Header -->
-      <div id="profileModalHeader" class="p-5 sm:p-6 border-b theme-border flex items-start justify-between gap-4">
-        <!-- Populated dynamically -->
-      </div>
-
-      <!-- Profile Modal Scrollable Body -->
-      <div class="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1" id="profileModalBody">
-        <!-- Populated dynamically -->
+  <div id="detailModal" class="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4" onclick="closeDetailModal(event)">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+      <div id="detailHeader" class="p-5 border-b border-slate-800 flex items-start justify-between gap-4"></div>
+      <div id="detailReviews" class="p-5 overflow-y-auto space-y-3 flex-1"></div>
+      <div class="p-4 border-t border-slate-800 bg-slate-950/50 flex justify-between items-center">
+        <button onclick="closeDetailModal()" class="px-4 py-2 rounded-lg border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-800">
+          Close
+        </button>
+        <button id="detailAddReviewBtn" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs">
+          + Review This Item
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- ==================== 2. ADD LISTING / WRITE REVIEW MODAL ==================== -->
-  <div id="submissionModalOverlay" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="handleBackdropClick(event, 'submissionModalOverlay')">
-    <div class="theme-surface border rounded-2xl w-full max-w-xl overflow-hidden shadow-2xl my-auto" onclick="event.stopPropagation()">
-      
-      <!-- Modal Header & Mode Switcher -->
-      <div class="p-5 border-b theme-border flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <button type="button" id="tabModeReview" onclick="switchSubmissionMode('review')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors">
-            ★ Write a Review
-          </button>
-          <button type="button" id="tabModeListing" onclick="switchSubmissionMode('listing')" class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors">
-            + Add New Listing
-          </button>
-        </div>
-        <button onclick="closeSubmissionModal()" class="p-1.5 rounded-lg theme-elevated theme-text-muted hover:text-rose-400">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
+  <div id="writeModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4" onclick="closeWriteModal(event)">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl" onclick="event.stopPropagation()">
+      <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+        <h2 class="font-bold text-base">Submit a Review</h2>
+        <button onclick="closeWriteModal()" class="text-slate-400 hover:text-slate-200 text-sm px-2 py-1">✕</button>
       </div>
-
-      <!-- Form -->
-      <form id="submissionForm" onsubmit="handleFormSubmit(event)" class="p-5 sm:p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-        
-        <!-- Existing Listing Selector (Shown in 'review' mode) -->
-        <div id="existingItemSelectGroup">
-          <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1.5">Select Listing to Review *</label>
-          <select id="reviewTargetItemSelect" class="w-full px-3.5 py-2.5 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500">
-            <!-- Populated dynamically -->
-          </select>
+      <form id="reviewForm" onsubmit="submitReview(event)" class="p-5 space-y-4">
+        <div class="flex gap-2 p-1 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold">
+          <button type="button" id="modeExistingBtn" onclick="setFormMode('existing')" class="flex-1 py-1.5 rounded-md bg-emerald-500 text-slate-950">
+            Existing Item
+          </button>
+          <button type="button" id="modeNewBtn" onclick="setFormMode('new')" class="flex-1 py-1.5 rounded-md text-slate-400">
+            + New Item
+          </button>
         </div>
 
-        <!-- New Listing Details Block (Shown in 'listing' mode) -->
-        <div id="newListingFieldsGroup" class="hidden space-y-4 pb-3 border-b theme-border">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Name of Website / Item *</label>
-              <input type="text" id="newListingName" placeholder="e.g., Obsidian" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500" />
-            </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Domain or Subtitle *</label>
-              <input type="text" id="newListingDomain" placeholder="e.g., obsidian.md" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500" />
-            </div>
-          </div>
+        <div id="existingGroup">
+          <label class="block text-xs text-slate-400 mb-1">Choose Item</label>
+          <select id="existingSelect" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500"></select>
+        </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+        <div id="newGroup" class="hidden space-y-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Item Name</label>
+            <input type="text" id="itemName" placeholder="e.g. Obsidian" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div class="grid grid-cols-2 gap-3">
             <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Category *</label>
-              <select id="newListingCategory" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500">
+              <label class="block text-xs text-slate-400 mb-1">Domain / Subtitle</label>
+              <input type="text" id="itemDomain" placeholder="e.g. obsidian.md" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-xs text-slate-400 mb-1">Category</label>
+              <select id="itemCategory" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500">
                 <option value="Websites">Websites</option>
-                <option value="Apps & Dev">Apps & Dev</option>
+                <option value="Apps & Tools">Apps & Tools</option>
                 <option value="Anime & Media">Anime & Media</option>
-                <option value="Games">Games</option>
-                <option value="Tech & Gear">Tech & Gear</option>
+                <option value="Gaming">Gaming</option>
               </select>
             </div>
-            <div>
-              <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Tags (comma-separated)</label>
-              <input type="text" id="newListingTags" placeholder="e.g., Markdown, Local-First, Free" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500" />
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Listing Overview / Description *</label>
-            <textarea id="newListingDesc" rows="2" placeholder="Briefly describe what this website, tool, game, or hardware product does..." class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500"></textarea>
           </div>
         </div>
 
-        <!-- Interactive 1-5 Star Selector (Trustpilot Square Style) -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Your Name</label>
+            <input type="text" id="reviewAuthor" required placeholder="e.g. Alex" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-400 mb-1">Rating (1 - 5)</label>
+            <select id="reviewScore" class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500">
+              <option value="5">5 ★ — Excellent</option>
+              <option value="4">4 ★ — Good</option>
+              <option value="3">3 ★ — Average</option>
+              <option value="2">2 ★ — Poor</option>
+              <option value="1">1 ★ — Bad</option>
+            </select>
+          </div>
+        </div>
+
         <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-2">Your Rating *</label>
-          <div class="flex items-center gap-3">
-            <div id="interactiveStarPicker" class="flex items-center gap-1.5">
-              <!-- 5 Interactive Square Stars rendered by JS -->
-            </div>
-            <span id="selectedRatingLabel" class="text-xs font-bold px-2.5 py-1 rounded-md bg-emerald-500/15 text-emerald-400">5.0 — Excellent</span>
-          </div>
-          <input type="hidden" id="reviewRatingInput" value="5" />
+          <label class="block text-xs text-slate-400 mb-1">Your Review</label>
+          <textarea id="reviewText" rows="3" required placeholder="Share your experience..." class="w-full px-3 py-2 rounded-lg bg-slate-950 border border-slate-800 text-sm focus:outline-none focus:border-emerald-500"></textarea>
         </div>
 
-        <!-- Reviewer Name & Review Title -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Your Display Name *</label>
-            <input type="text" id="reviewAuthorInput" required placeholder="e.g., AlexK_Dev" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Review Headline *</label>
-            <input type="text" id="reviewTitleInput" required placeholder="e.g., Fast, clean, and reliable daily driver" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500" />
-          </div>
-        </div>
-
-        <!-- Pros & Cons Inputs -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-emerald-400 mb-1">+ Pros (comma-separated)</label>
-            <input type="text" id="reviewProsInput" placeholder="e.g., Zero ads, Fast load times" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500" />
-          </div>
-          <div>
-            <label class="block text-xs font-semibold uppercase tracking-wider text-rose-400 mb-1">− Cons (comma-separated)</label>
-            <input type="text" id="reviewConsInput" placeholder="e.g., Steep learning curve" class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-rose-500" />
-          </div>
-        </div>
-
-        <!-- Review Body -->
-        <div>
-          <label class="block text-xs font-semibold uppercase tracking-wider theme-text-muted mb-1">Detailed Review *</label>
-          <textarea id="reviewCommentInput" rows="3" required placeholder="Share your honest experience, performance notes, or community warnings..." class="w-full px-3.5 py-2 rounded-xl border theme-elevated text-sm focus:outline-none focus:border-emerald-500"></textarea>
-        </div>
-
-        <!-- Modal Footer Actions -->
-        <div class="pt-2 flex items-center justify-end gap-2.5">
-          <button type="button" onclick="closeSubmissionModal()" class="px-4 py-2 rounded-xl border theme-elevated text-xs font-semibold hover:border-slate-500">Cancel</button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs sm:text-sm font-bold shadow-lg shadow-emerald-500/20 transition-all">
-            Publish to Kinoku
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeWriteModal()" class="px-4 py-2 rounded-lg border border-slate-700 text-xs font-medium text-slate-300 hover:bg-slate-800">
+            Cancel
+          </button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-xs">
+            Post Review
           </button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- ==================== 3. GITHUB PAGES JSON DATA MANAGER MODAL ==================== -->
-  <div id="jsonModalOverlay" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="handleBackdropClick(event, 'jsonModalOverlay')">
-    <div class="theme-surface border rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl my-auto" onclick="event.stopPropagation()">
-      <div class="p-5 border-b theme-border flex items-center justify-between">
-        <div>
-          <h2 class="font-bold text-base flex items-center gap-2">
-            <span class="text-emerald-400 font-mono">{ }</span>
-            <span>GitHub Pages Static Data Manager</span>
-          </h2>
-          <p class="text-xs theme-text-muted mt-0.5">Export your live directory state to commit directly into your repository or import custom JSON.</p>
-        </div>
-        <button onclick="closeJsonModal()" class="p-1.5 rounded-lg theme-elevated theme-text-muted hover:text-rose-400">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-
-      <div class="p-5 space-y-4">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <div class="flex items-center gap-2">
-            <button onclick="copyJsonToClipboard()" class="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"/>
-              </svg>
-              <span>Copy JSON</span>
-            </button>
-            <button onclick="downloadJsonFile()" class="px-3.5 py-1.5 rounded-lg border theme-elevated text-xs font-semibold hover:border-emerald-500/50 flex items-center gap-1.5">
-              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-              </svg>
-              <span>Download .json</span>
-            </button>
-          </div>
-
-          <!-- Two-step safe reset button (No native confirm() dialog) -->
-          <button id="resetDemoDataBtn" onclick="triggerResetDemoData()" class="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 text-xs font-semibold transition-colors">
-            Reset to Default Demo Data
-          </button>
-        </div>
-
-        <div>
-          <label class="block text-xs font-mono theme-text-muted mb-1">Directory Dataset JSON (Editable — paste & click "Import JSON" below):</label>
-          <textarea id="jsonDataTextarea" rows="11" class="w-full p-3 rounded-xl border theme-elevated font-mono text-xs focus:outline-none focus:border-emerald-500"></textarea>
-        </div>
-
-        <div class="flex items-center justify-between pt-1">
-          <span class="text-[11px] theme-text-muted">Tip: Replace <code class="text-emerald-400">INITIAL_DIRECTORY_DATA</code> in <code class="text-emerald-400">index.html</code> with this JSON to make changes permanent for all GitHub Pages visitors.</span>
-          <button onclick="importJsonFromTextarea()" class="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs shrink-0">
-            Import & Apply JSON
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ==================== TOAST NOTIFICATION CONTAINER ==================== -->
-  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
-
-  <!-- ==================== APPLICATION JAVASCRIPT ==================== -->
   <script>
-    /*************************************************************************
-     * 1. RICH PRE-LOADED DIRECTORY DATA (12 DIVERSE LISTINGS)
-     *************************************************************************/
-    const INITIAL_DIRECTORY_DATA = [
+    const CATEGORIES = ["All", "Websites", "Apps & Tools", "Anime & Media", "Gaming"];
+    const STORAGE_KEY = "kinoku_simple_v1";
+
+    const DEFAULT_ITEMS = [
       {
         id: "github",
         name: "GitHub",
         domain: "github.com",
-        category: "Apps & Dev",
-        verified: true,
-        safetyBadge: "Verified Official Platform",
-        description: "The world's leading developer platform for hosting Git repositories, collaborating on open-source software, automating CI/CD workflows with Actions, and deploying static websites for free via GitHub Pages.",
-        tags: ["Open Source", "Git Hosting", "Free Pages", "Fast UI"],
-        bookmarked: true,
-        iconBg: "from-slate-700 to-slate-900",
-        iconText: "GH",
+        category: "Apps & Tools",
         reviews: [
-          {
-            id: "rev-gh-1",
-            author: "KaitoV",
-            role: "Full-Stack Maintainer",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-04",
-            title: "Unbeatable for open source & free GitHub Pages hosting",
-            comment: "Hosting static web apps like Kinoku directly from a branch with automatic HTTPS and custom domains takes less than two minutes. Pull requests, code review tools, and Actions make it indispensable.",
-            pros: ["Free GitHub Pages hosting", "Fast keyboard shortcuts", "Massive open-source ecosystem"],
-            cons: ["Actions minutes can run out on private repos"],
-            helpfulCount: 38,
-            userVoted: false
-          },
-          {
-            id: "rev-gh-2",
-            author: "ElenaRostova",
-            role: "Systems Engineer",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-10-19",
-            title: "Rock-solid reliability and clean dark mode",
-            comment: "The OLED dark theme option and code search improvements over the past year have made browsing massive monorepos effortless.",
-            pros: ["Customizable dark themes", "Instant code search", "SSH & passkey support"],
-            cons: ["Occasional dashboard feed clutter"],
-            helpfulCount: 19,
-            userVoted: false
-          }
-        ]
-      },
-      {
-        id: "brave-browser",
-        name: "Brave Browser",
-        domain: "brave.com",
-        category: "Apps & Dev",
-        verified: true,
-        safetyBadge: "Privacy Audited",
-        description: "A fast, privacy-focused Chromium web browser with built-in Shields that block invasive trackers, third-party cookies, and annoying pop-up ads right out of the box.",
-        tags: ["Ad-Free", "Privacy", "Open Source", "Chromium"],
-        bookmarked: false,
-        iconBg: "from-orange-500 to-rose-600",
-        iconText: "BR",
-        reviews: [
-          {
-            id: "rev-br-1",
-            author: "ZeroTrack",
-            role: "Privacy Advocate",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-01",
-            title: "Blocks intrusive popups and trackers out of the box",
-            comment: "Switched to Brave full-time across desktop and Android. Streaming sites and heavy news portals load twice as fast without tracker bloat.",
-            pros: ["Built-in aggressive ad & script blocker", "Full Chrome extension compatibility", "Low RAM footprint"],
-            cons: ["Crypto wallet settings require manual disabling on first install"],
-            helpfulCount: 44,
-            userVoted: false
-          },
-          {
-            id: "rev-br-2",
-            author: "MarcusL",
-            role: "Web Designer",
-            verifiedUser: false,
-            rating: 4,
-            date: "2026-09-28",
-            title: "Great daily browser once you disable the extra rewards icons",
-            comment: "Once you spend 60 seconds hiding the Rewards and Wallet buttons in the toolbar, it becomes the cleanest Chromium browser available.",
-            pros: ["No manifest v3 adblock headaches", "Vertical tabs support"],
-            cons: ["Default new tab has sponsored toggles enabled"],
-            helpfulCount: 21,
-            userVoted: false
-          }
+          { author: "Kaito", score: 5, text: "Reliable code hosting and free static deployment with GitHub Pages." },
+          { author: "Elena", score: 5, text: "Pull requests, Actions, and dark mode make collaboration effortless." }
         ]
       },
       {
@@ -672,257 +199,28 @@
         name: "AniList",
         domain: "anilist.co",
         category: "Anime & Media",
-        verified: true,
-        safetyBadge: "Ad-Free Community",
-        description: "A modern anime and manga tracking platform featuring custom scoring systems, seasonal charts, rich GraphQL API support, and a clean, customizable profile interface.",
-        tags: ["Ad-Free", "Fast UI", "GraphQL API", "Tracking"],
-        bookmarked: true,
-        iconBg: "from-sky-500 to-blue-700",
-        iconText: "AL",
         reviews: [
-          {
-            id: "rev-al-1",
-            author: "SoraTakahashi",
-            role: "Media Archivist",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-06",
-            title: "The cleanest anime & manga tracker on the web",
-            comment: "Compared to legacy databases, AniList feels like a modern native app. Zero intrusive banner ads, instant episode increments, and a fantastic 100-point or 5-star rating choice.",
-            pros: ["Completely ad-free experience", "Public GraphQL API for developers", "Seasonal airing countdowns"],
-            cons: ["Mobile web layout occasionally hides advanced filters"],
-            helpfulCount: 52,
-            userVoted: false
-          },
-          {
-            id: "rev-al-2",
-            author: "NoriK",
-            role: "Community Member",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-10-12",
-            title: "Custom CSS profiles and instant list syncing",
-            comment: "Integrates with every major reader and media center automatically. Dark theme looks great on OLED monitors.",
-            pros: ["Fast search autocomplete", "Flexible scoring systems"],
-            cons: ["Forum threads move very quickly"],
-            helpfulCount: 15,
-            userVoted: false
-          }
+          { author: "Sora", score: 5, text: "Cleanest anime and manga tracker with zero intrusive ads and a fast API." },
+          { author: "Nori", score: 4, text: "Great seasonal charts and flexible scoring systems." }
+        ]
+      },
+      {
+        id: "brave",
+        name: "Brave Browser",
+        domain: "brave.com",
+        category: "Apps & Tools",
+        reviews: [
+          { author: "ZeroTrack", score: 5, text: "Built-in ad and pop-up blocking works right out of the box." },
+          { author: "Marcus", score: 4, text: "Fast daily browser once you hide the extra wallet icons." }
         ]
       },
       {
         id: "vscode",
         name: "Visual Studio Code",
         domain: "code.visualstudio.com",
-        category: "Apps & Dev",
-        verified: true,
-        safetyBadge: "Official Microsoft Build",
-        description: "Lightweight yet powerful source code editor supporting thousands of extensions, built-in Git workflows, remote SSH development, and integrated terminal debugging.",
-        tags: ["Code Editor", "Extensions", "Fast UI", "Cross-Platform"],
-        bookmarked: false,
-        iconBg: "from-blue-500 to-indigo-700",
-        iconText: "VS",
+        category: "Apps & Tools",
         reviews: [
-          {
-            id: "rev-vs-1",
-            author: "DevLinx",
-            role: "Frontend Architect",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-02",
-            title: "Still the gold standard for web and systems development",
-            comment: "Between Remote Containers, GitLens, and the blazing-fast multi-cursor editing, VS Code adapts to everything from Python data scripts to Rust and TypeScript.",
-            pros: ["Unmatched extension marketplace", "Web version runs right in browser", "Monthly quality updates"],
-            cons: ["Can consume high memory if 40+ extensions are active"],
-            helpfulCount: 31,
-            userVoted: false
-          },
-          {
-            id: "rev-vs-2",
-            author: "TariqM",
-            role: "Backend Developer",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-09-14",
-            title: "Settings sync makes switching machines painless",
-            comment: "Sign in with GitHub and all keybindings, snippets, and themes appear on a fresh laptop in 10 seconds.",
-            pros: ["Effortless GitHub Settings Sync", "Integrated terminal"],
-            cons: ["Telemetry needs to be toggled off manually if desired"],
-            helpfulCount: 14,
-            userVoted: false
-          }
-        ]
-      },
-      {
-        id: "discord",
-        name: "Discord",
-        domain: "discord.com",
-        category: "Apps & Dev",
-        verified: true,
-        safetyBadge: "Verified Communications",
-        description: "Voice, video, and text communication service used by gaming communities, open-source developer projects, and study groups with low-latency screen sharing.",
-        tags: ["Voice Chat", "Communities", "Multiplayer", "Screen Share"],
-        bookmarked: false,
-        iconBg: "from-indigo-500 to-violet-700",
-        iconText: "DC",
-        reviews: [
-          {
-            id: "rev-dc-1",
-            author: "ValkyrieGG",
-            role: "Server Moderator",
-            verifiedUser: true,
-            rating: 4,
-            date: "2026-10-29",
-            title: "Essential for gaming & dev communities, despite Nitro upsells",
-            comment: "Voice quality and low-latency 60fps screen sharing are still unmatched. However, the frequent Nitro shop popups and avatar decorations clutter the sidebar.",
-            pros: ["Crystal-clear voice & noise suppression", "Forum channels for organized support", "Rich bot API"],
-            cons: ["Frequent Nitro promotional badges", "Desktop client uses Electron resources"],
-            helpfulCount: 27,
-            userVoted: false
-          },
-          {
-            id: "rev-dc-2",
-            author: "ChrisP",
-            role: "Gamer",
-            verifiedUser: false,
-            rating: 4,
-            date: "2026-10-03",
-            title: "Great voice channels, mobile app has improved",
-            comment: "After several updates, the mobile app is snappy again. Best place to coordinate multiplayer raids.",
-            pros: ["Cross-platform voice sync", "Easy role permissions"],
-            cons: ["File upload limit on free tier is restrictive"],
-            helpfulCount: 11,
-            userVoted: false
-          }
-        ]
-      },
-      {
-        id: "little-big-snake",
-        name: "Little Big Snake",
-        domain: "littlebigsnake.com",
-        category: "Games",
-        verified: true,
-        safetyBadge: "Safe Browser Game",
-        description: "A polished, skill-based multiplayer browser arena game that evolves the classic snake formula with smooth 60fps physics, co-op modes, evolutions, and progression.",
-        tags: ["Multiplayer", "Browser Game", "60FPS", "Co-op"],
-        bookmarked: false,
-        iconBg: "from-emerald-500 to-green-700",
-        iconText: "LB",
-        reviews: [
-          {
-            id: "rev-lbs-1",
-            author: "ArcadeKing",
-            role: "Web Gamer",
-            verifiedUser: true,
-            rating: 4,
-            date: "2026-10-25",
-            title: "Way more polished than standard .io snake games",
-            comment: "Runs super smoothly right in the browser with zero lag. Playing as the flying juvie bug after you get KO'd keeps you in the action.",
-            pros: ["Smooth WebGL graphics & controls", "Fun co-op team mechanics", "Instant browser play"],
-            cons: ["VIP progression timers on free accounts"],
-            helpfulCount: 18,
-            userVoted: false
-          },
-          {
-            id: "rev-lbs-2",
-            author: "Mika_S",
-            role: "Casual Player",
-            verifiedUser: false,
-            rating: 5,
-            date: "2026-09-21",
-            title: "Addictive 10-minute break game",
-            comment: "Great hitboxes and responsive mouse steering. Easy to jump in with friends.",
-            pros: ["Responsive steering", "Active lobbies at all hours"],
-            cons: ["Lots of cosmetic menus on the home screen"],
-            helpfulCount: 9,
-            userVoted: false
-          }
-        ]
-      },
-      {
-        id: "bullet-force",
-        name: "Bullet Force",
-        domain: "bulletforce.com",
-        category: "Games",
-        verified: true,
-        safetyBadge: "Verified WebGL FPS",
-        description: "Fast-paced multiplayer 3D first-person shooter playable directly in modern web browsers and mobile devices, featuring custom weapon loadouts and classic arena maps.",
-        tags: ["Multiplayer", "FPS", "WebGL", "Custom Lobbies"],
-        bookmarked: false,
-        iconBg: "from-amber-500 to-red-700",
-        iconText: "BF",
-        reviews: [
-          {
-            id: "rev-bf-1",
-            author: "RecoilMaster",
-            role: "FPS Enthusiast",
-            verifiedUser: true,
-            rating: 4,
-            date: "2026-10-18",
-            title: "Impressive 3D shooter running right inside a browser tab",
-            comment: "Gunplay feels surprisingly tight for a browser FPS. Custom matches and weapon optic customization make it great for quick LAN-style sessions.",
-            pros: ["No 80GB download required", "Deep weapon attachment customization", "High frame rates"],
-            cons: ["Some high-tier weapons take a long grind to unlock"],
-            helpfulCount: 22,
-            userVoted: false
-          },
-          {
-            id: "rev-bf-2",
-            author: "JaxonT",
-            role: "Gamer",
-            verifiedUser: false,
-            rating: 4,
-            date: "2026-08-30",
-            title: "Fun classic maps like Urban and Outpost",
-            comment: "Great nostalgia and fast matchmaking when you just want a quick 10-minute match.",
-            pros: ["Fast respawn modes", "Classic map design"],
-            cons: ["Occasional veteran lobbies can be tough for newcomers"],
-            helpfulCount: 12,
-            userVoted: false
-          }
-        ]
-      },
-      {
-        id: "wikipedia",
-        name: "Wikipedia",
-        domain: "wikipedia.org",
-        category: "Websites",
-        verified: true,
-        safetyBadge: "Non-Profit Knowledge Commons",
-        description: "The free, multilingual open-collaborative online encyclopedia written and maintained by a community of volunteers using MediaWiki, completely free of commercial advertising.",
-        tags: ["Ad-Free", "Open Source", "Encyclopedia", "Fast UI"],
-        bookmarked: true,
-        iconBg: "from-zinc-600 to-neutral-800",
-        iconText: "WK",
-        reviews: [
-          {
-            id: "rev-wk-1",
-            author: "DrHannahL",
-            role: "Researcher",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-05",
-            title: "The backbone of the open internet",
-            comment: "Fast, zero commercial ads, transparent citation histories, and the updated Vector 2022 skin with native dark mode makes long reading sessions comfortable.",
-            pros: ["Zero commercial ads or paywalls", "Rigorous footnote citations", "Blazing fast page loads"],
-            cons: ["Donation banners can be large once a year"],
-            helpfulCount: 63,
-            userVoted: false
-          },
-          {
-            id: "rev-wk-2",
-            author: "Samir_K",
-            role: "Archivist",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-10-11",
-            title: "Clean typography and offline Kiwix dumps",
-            comment: "You can download the entire encyclopedia for offline reading or browse instantaneously on any connection.",
-            pros: ["Available in 300+ languages", "Open license content"],
-            cons: ["Niche stub articles vary in depth"],
-            helpfulCount: 25,
-            userVoted: false
-          }
+          { author: "DevLinx", score: 5, text: "Unmatched extension ecosystem and super responsive editing." }
         ]
       },
       {
@@ -930,1389 +228,282 @@
         name: "MangaDex",
         domain: "mangadex.org",
         category: "Anime & Media",
-        verified: true,
-        safetyBadge: "Ad-Free Reader",
-        description: "Community-driven, ad-free comic and manga reading platform featuring a highly customizable reader (long-strip, RTL/LTR, OLED dark backgrounds) and multilingual group uploads.",
-        tags: ["Ad-Free", "Fast UI", "Custom Reader", "Multilingual"],
-        bookmarked: false,
-        iconBg: "from-orange-500 to-amber-600",
-        iconText: "MD",
         reviews: [
-          {
-            id: "rev-md-1",
-            author: "Renji_K",
-            role: "Avid Reader",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-03",
-            title: "Zero popups, zero ads, and the best web reader controls",
-            comment: "Unlike sketchy aggregator sites riddled with malware popups, MangaDex has zero ads and lets you customize image scaling, preloading, and keyboard shortcuts.",
-            pros: ["100% ad-free & safe", "Preloads pages seamlessly", "Supports official publisher links"],
-            cons: ["Some licensed chapters redirect to external official publishers"],
-            helpfulCount: 49,
-            userVoted: false
-          },
-          {
-            id: "rev-md-2",
-            author: "ChloeW",
-            role: "Translator",
-            verifiedUser: true,
-            rating: 4,
-            date: "2026-09-29",
-            title: "Great API and clean seasonal discovery",
-            comment: "The v5 rewrite has been super stable and the advanced tag inclusion/exclusion search is second to none.",
-            pros: ["Powerful tag filtering", "Clean dark UI"],
-            cons: ["Peak weekend traffic occasionally slows image servers"],
-            helpfulCount: 17,
-            userVoted: false
-          }
+          { author: "Renji", score: 5, text: "100% ad-free reader with customizable page preloading and layouts." },
+          { author: "Chloe", score: 4, text: "Powerful tag filtering and clean dark interface." }
         ]
       },
       {
-        id: "asus-zenbook-14-oled",
-        name: "ASUS Zenbook 14 OLED",
-        domain: "asus.com/zenbook-14-oled",
-        category: "Tech & Gear",
-        verified: true,
-        safetyBadge: "Verified Hardware",
-        description: "Ultraportable 14-inch laptop featuring a 3K 120Hz Lumina OLED display, all-day 75Wh battery life, full-size HDMI & Thunderbolt/USB4 ports, and a sleek 1.2kg aluminum chassis.",
-        tags: ["OLED", "Ultrabook", "120Hz", "Long Battery"],
-        bookmarked: true,
-        iconBg: "from-cyan-600 to-teal-700",
-        iconText: "ZB",
+        id: "discord",
+        name: "Discord",
+        domain: "discord.com",
+        category: "Apps & Tools",
         reviews: [
-          {
-            id: "rev-zb-1",
-            author: "TechNomad",
-            role: "Hardware Reviewer",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-11-07",
-            title: "Stunning 120Hz OLED screen and real ports in a 1.2kg frame",
-            comment: "Coding and watching media on this 2880x1800 OLED panel is incredible. Having a full-size HDMI 2.1 port plus USB-A and dual USB-C means I finally ditched my dongle.",
-            pros: ["True blacks & 120Hz OLED display", "12+ hours real-world battery life", "Full port selection without dongles"],
-            cons: ["Soldered RAM means you must pick 32GB at purchase"],
-            helpfulCount: 36,
-            userVoted: false
-          },
-          {
-            id: "rev-zb-2",
-            author: "LiamChen",
-            role: "CS Student",
-            verifiedUser: true,
-            rating: 4,
-            date: "2026-10-15",
-            title: "Quiet fans and tactile keyboard for long coding sessions",
-            comment: "Runs Linux and Windows dual-boot smoothly. The Numpad toggle on the trackpad is actually handy for spreadsheets.",
-            pros: ["Great keyboard travel", "Whisper-quiet on silent profile"],
-            cons: ["Glossy screen reflects bright overhead studio lights"],
-            helpfulCount: 16,
-            userVoted: false
-          }
+          { author: "Valkyrie", score: 4, text: "Crystal-clear voice chat and low-latency screen sharing for communities." }
         ]
       },
       {
-        id: "cloudflare",
-        name: "Cloudflare",
-        domain: "cloudflare.com",
+        id: "little-big-snake",
+        name: "Little Big Snake",
+        domain: "littlebigsnake.com",
+        category: "Gaming",
+        reviews: [
+          { author: "ArcadeKing", score: 4, text: "Smooth 60fps browser multiplayer game with fun co-op mechanics." }
+        ]
+      },
+      {
+        id: "streamads-example",
+        name: "StreamAds Example",
+        domain: "stream-ads-example.net",
         category: "Websites",
-        verified: true,
-        safetyBadge: "Core Web Infrastructure",
-        description: "Global content delivery network (CDN), DDoS mitigation, authoritative DNS (1.1.1.1), Pages static hosting, and serverless Workers edge platform.",
-        tags: ["DNS", "Security", "Fast UI", "Free Tier"],
-        bookmarked: false,
-        iconBg: "from-amber-500 to-orange-600",
-        iconText: "CF",
         reviews: [
-          {
-            id: "rev-cf-1",
-            author: "NetOpsDan",
-            role: "Infrastructure Lead",
-            verifiedUser: true,
-            rating: 5,
-            date: "2026-10-30",
-            title: "Fastest authoritative DNS and generous free tier",
-            comment: "DNS propagation takes seconds instead of hours. Combining GitHub repositories with Cloudflare DNS and R2 storage gives enterprise-grade speed at zero cost for indie projects.",
-            pros: ["Instant DNS propagation", "Unmetered DDoS protection on free plan", "1.1.1.1 privacy DNS"],
-            cons: ["Dashboard has dozens of enterprise tabs to navigate"],
-            helpfulCount: 41,
-            userVoted: false
-          },
-          {
-            id: "rev-cf-2",
-            author: "SarahJenkins",
-            role: "Indie Maker",
-            verifiedUser: true,
-            rating: 4,
-            date: "2026-09-19",
-            title: "At-cost domain registrar with zero renewal markup",
-            comment: "Moved all 14 of my domains here because they charge wholesale registry prices with no hidden ICANN markups.",
-            pros: ["Wholesale domain pricing", "Free SSL certificates"],
-            cons: ["Requires using Cloudflare nameservers for registrar domains"],
-            helpfulCount: 20,
-            userVoted: false
-          }
-        ]
-      },
-      {
-        id: "adheavystream-example",
-        name: "AdHeavyStream Example",
-        domain: "stream-popups-example.net",
-        category: "Websites",
-        verified: false,
-        safetyBadge: "Community Caution Flag",
-        description: "Demonstration listing of an unverified streaming portal flagged by the community for aggressive overlay pop-ups, fake download buttons, and misleading redirects.",
-        tags: ["Popup Warning", "Unverified", "Heavy Ads", "Caution Flag"],
-        bookmarked: false,
-        iconBg: "from-rose-600 to-red-900",
-        iconText: "⚠",
-        reviews: [
-          {
-            id: "rev-bad-1",
-            author: "SecWatchdog",
-            role: "Security Analyst",
-            verifiedUser: true,
-            rating: 1,
-            date: "2026-11-08",
-            title: "Avoid without a strict script blocker — invisible clickjacking overlays",
-            comment: "Clicking anywhere on the video player triggers three separate tab-under redirects and fake browser update prompts. Classic example of why community trust directories matter.",
-            pros: ["None — serves as a warning example"],
-            cons: ["Invisible clickjacking overlays", "Fake download buttons", "Aggressive push notification prompts"],
-            helpfulCount: 74,
-            userVoted: false
-          },
-          {
-            id: "rev-bad-2",
-            author: "JordanM",
-            role: "Community Reviewer",
-            verifiedUser: true,
-            rating: 2,
-            date: "2026-10-22",
-            title: "Broken links and deceptive 'Play HD' buttons",
-            comment: "Even with an ad blocker enabled, half the mirror links lead to dead pages or ask you to disable your extensions.",
-            pros: ["Page loads initially"],
-            cons: ["Forces anti-adblock walls", "Misleading UI buttons"],
-            helpfulCount: 39,
-            userVoted: false
-          },
-          {
-            id: "rev-bad-3",
-            author: "PixelScout",
-            role: "Tester",
-            verifiedUser: false,
-            rating: 2,
-            date: "2026-10-04",
-            title: "Poor mobile experience with auto-playing audio ads",
-            comment: "On mobile browsers without ad filtering, the page becomes unusable within five seconds.",
-            pros: ["Catalog list is readable"],
-            cons: ["Auto-redirect scripts on mobile"],
-            helpfulCount: 28,
-            userVoted: false
-          }
+          { author: "SecWatch", score: 1, text: "Too many aggressive pop-up overlays and misleading download buttons." },
+          { author: "Jordan", score: 2, text: "Broken mirror links and constant redirect traps without an adblocker." }
         ]
       }
     ];
 
-    /*************************************************************************
-     * 2. APPLICATION STATE & STORAGE KEYS
-     *************************************************************************/
-    const STORAGE_KEY = "kinoku_directory_data_v1";
-    const THEME_KEY = "kinoku_theme_v1";
-
-    let directoryItems = [];
-    let state = {
-      searchQuery: "",
-      activeCategory: "All",
-      activeTag: null,
-      onlyBookmarked: false,
-      minRatingFilter: "all", // 'all', '4.5', '3.5', 'low'
-      sortBy: "highest",      // 'highest', 'most_reviewed', 'recent', 'lowest'
-      activeProfileId: null,
-      profileStarFilter: "all",
-      profileReviewSearch: "",
-      submissionMode: "review", // 'review' | 'listing'
-      resetConfirmPending: false
-    };
-
-    const CATEGORIES = ["All", "Websites", "Apps & Dev", "Anime & Media", "Games", "Tech & Gear"];
-
-    /*************************************************************************
-     * 3. TRUSTPILOT RATING & COLOR TIER HELPERS
-     *************************************************************************/
-    function computeItemMetrics(item) {
-      const reviews = item.reviews || [];
-      const count = reviews.length;
-      if (count === 0) {
-        return { score: 0, count: 0, latestDate: "2026-01-01" };
-      }
-      const sum = reviews.reduce((acc, r) => acc + Number(r.rating || 0), 0);
-      const score = Number((sum / count).toFixed(1));
-      const latestDate = reviews.reduce((latest, r) => (r.date > latest ? r.date : latest), reviews[0].date || "2026-01-01");
-      return { score, count, latestDate };
-    }
-
-    /**
-     * Returns Trustpilot-style color tokens based on 1.0 - 5.0 score
-     * 4.5 - 5.0: Emerald (#10b981) — "Excellent"
-     * 3.5 - 4.4: Lime/Teal (#84cc16) — "Great"
-     * 2.5 - 3.4: Amber (#f59e0b) — "Average"
-     * 1.0 - 2.4: Rose/Red (#ef4444) — "Poor"
-     */
-    function getTrustTier(score) {
-      if (score >= 4.5) {
-        return {
-          label: "Excellent",
-          hex: "#10b981",
-          badgeBg: "bg-emerald-500/15 text-emerald-400 border-emerald-500/30",
-          solidBg: "bg-[#10b981] text-slate-950",
-          textColor: "text-emerald-400"
-        };
-      }
-      if (score >= 3.5) {
-        return {
-          label: "Great",
-          hex: "#84cc16",
-          badgeBg: "bg-lime-500/15 text-lime-400 border-lime-500/30",
-          solidBg: "bg-[#84cc16] text-slate-950",
-          textColor: "text-lime-400"
-        };
-      }
-      if (score >= 2.5) {
-        return {
-          label: "Average",
-          hex: "#f59e0b",
-          badgeBg: "bg-amber-500/15 text-amber-400 border-amber-500/30",
-          solidBg: "bg-[#f59e0b] text-slate-950",
-          textColor: "text-amber-400"
-        };
-      }
-      return {
-        label: "Poor",
-        hex: "#ef4444",
-        badgeBg: "bg-rose-500/15 text-rose-400 border-rose-500/30",
-        solidBg: "bg-[#ef4444] text-white",
-        textColor: "text-rose-400"
-      };
-    }
-
-    /**
-     * Generates 5 Trustpilot-style square star boxes colored by rating tier
-     */
-    function renderTrustpilotStars(score, size = "md") {
-      const tier = getTrustTier(score);
-      const fullStars = Math.round(score);
-      const dims = size === "sm" ? "w-4 h-4" : size === "lg" ? "w-7 h-7" : "w-5 h-5";
-      const iconDims = size === "sm" ? "w-2.5 h-2.5" : size === "lg" ? "w-4 h-4" : "w-3 h-3";
-
-      let html = `<div class="inline-flex items-center gap-1" aria-label="Rating ${score} out of 5">`;
-      for (let i = 1; i <= 5; i++) {
-        const isFilled = i <= fullStars;
-        const bgStyle = isFilled
-          ? `background-color: ${tier.hex};`
-          : `background-color: rgba(148, 163, 184, 0.22);`;
-        html += `
-          <span class="tp-star-box ${dims}" style="${bgStyle}">
-            <svg class="${iconDims}" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-          </span>
-        `;
-      }
-      html += `</div>`;
-      return html;
-    }
+    let items = JSON.parse(localStorage.getItem(STORAGE_KEY)) || DEFAULT_ITEMS;
+    let activeCategory = "All";
+    let formMode = "existing";
 
     function escapeHtml(str) {
-      if (str === null || str === undefined) return "";
-      return String(str)
+      return String(str || "")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(/"/g, "&quot;");
     }
 
-    /*************************************************************************
-     * 4. INITIALIZATION & PERSISTENCE
-     *************************************************************************/
-    function initApp() {
-      // Load saved theme
-      const savedTheme = localStorage.getItem(THEME_KEY) || "dark";
-      applyTheme(savedTheme);
+    function getMetrics(item) {
+      const count = item.reviews.length;
+      const avg = count ? item.reviews.reduce((sum, r) => sum + Number(r.score), 0) / count : 0;
+      return { count, avg: Number(avg.toFixed(1)) };
+    }
 
-      // Load directory data from localStorage or fallback to INITIAL_DIRECTORY_DATA
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            directoryItems = parsed;
-          } else {
-            directoryItems = JSON.parse(JSON.stringify(INITIAL_DIRECTORY_DATA));
-          }
-        } else {
-          directoryItems = JSON.parse(JSON.stringify(INITIAL_DIRECTORY_DATA));
-        }
-      } catch (e) {
-        directoryItems = JSON.parse(JSON.stringify(INITIAL_DIRECTORY_DATA));
+    function getTierColor(score) {
+      if (score >= 4.0) return { bg: "bg-emerald-500", text: "text-emerald-400", badge: "bg-emerald-500 text-slate-950" };
+      if (score >= 2.5) return { bg: "bg-amber-500", text: "text-amber-400", badge: "bg-amber-500 text-slate-950" };
+      return { bg: "bg-red-500", text: "text-red-400", badge: "bg-red-500 text-white" };
+    }
+
+    function renderStars(score) {
+      const full = Math.round(score);
+      const tier = getTierColor(score);
+      let html = '<div class="inline-flex items-center gap-1">';
+      for (let i = 1; i <= 5; i++) {
+        const cls = i <= full ? tier.bg : "bg-slate-800 text-slate-600";
+        html += `<span class="tp-star w-5 h-5 ${cls}">★</span>`;
       }
-
-      // Keyboard shortcuts ('/' to focus search, 'Escape' to close modals)
-      window.addEventListener("keydown", (e) => {
-        if (e.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) {
-          e.preventDefault();
-          document.getElementById("mainSearchInput").focus();
-        } else if (e.key === "Escape") {
-          closeProfileModal();
-          closeSubmissionModal();
-          closeJsonModal();
-        }
-      });
-
-      renderInteractiveStarPicker(5);
-      renderAll();
+      html += "</div>";
+      return html;
     }
 
-    function saveDirectoryToStorage() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(directoryItems));
-      } catch (err) {
-        showToast("Storage limit reached in browser.", "error");
-      }
-    }
-
-    /*************************************************************************
-     * 5. DARK / LIGHT THEME TOGGLE
-     *************************************************************************/
-    function applyTheme(theme) {
-      const htmlEl = document.documentElement;
-      const sunIcon = document.getElementById("themeIconSun");
-      const moonIcon = document.getElementById("themeIconMoon");
-
-      if (theme === "light") {
-        htmlEl.classList.remove("dark");
-        sunIcon.classList.add("hidden");
-        moonIcon.classList.remove("hidden");
-      } else {
-        htmlEl.classList.add("dark");
-        sunIcon.classList.remove("hidden");
-        moonIcon.classList.add("hidden");
-      }
-      localStorage.setItem(THEME_KEY, theme);
-    }
-
-    function toggleTheme() {
-      const isDark = document.documentElement.classList.contains("dark");
-      const nextTheme = isDark ? "light" : "dark";
-      applyTheme(nextTheme);
-      showToast(`Switched to ${nextTheme === "dark" ? "OLED Dark" : "Crisp Light"} theme`, "info");
-    }
-
-    /*************************************************************************
-     * 6. RENDERING PIPELINE (STATS, TABS, CARDS, ACTIVE FILTERS)
-     *************************************************************************/
-    function renderAll() {
-      updateHeaderStats();
-      renderCategoryTabs();
-      updateTagChipsUI();
-      renderActiveFilterBanner();
-      renderDirectoryCards();
-    }
-
-    function updateHeaderStats() {
-      let totalReviews = 0;
-      let weightedScoreSum = 0;
-      let savedCount = 0;
-
-      directoryItems.forEach((item) => {
-        const { score, count } = computeItemMetrics(item);
-        totalReviews += count;
-        weightedScoreSum += score;
-        if (item.bookmarked) savedCount++;
-      });
-
-      const avgTrustScore = directoryItems.length > 0
-        ? (weightedScoreSum / directoryItems.length).toFixed(1)
-        : "0.0";
-
-      document.getElementById("statTotalListings").textContent = directoryItems.length;
-      document.getElementById("statTotalReviews").textContent = totalReviews;
-      document.getElementById("statAvgScore").textContent = avgTrustScore;
-      document.getElementById("savedCountBadge").textContent = savedCount;
-
-      const bookmarkBtn = document.getElementById("bookmarkFilterBtn");
-      const bookmarkIcon = document.getElementById("bookmarkHeaderIcon");
-      if (state.onlyBookmarked) {
-        bookmarkBtn.classList.add("border-amber-400", "bg-amber-500/10");
-        bookmarkIcon.setAttribute("fill", "currentColor");
-      } else {
-        bookmarkBtn.classList.remove("border-amber-400", "bg-amber-500/10");
-        bookmarkIcon.setAttribute("fill", "none");
-      }
-    }
-
-    function renderCategoryTabs() {
-      const container = document.getElementById("categoryTabsContainer");
-      const counts = { All: directoryItems.length };
-      CATEGORIES.slice(1).forEach((cat) => (counts[cat] = 0));
-
-      directoryItems.forEach((item) => {
-        if (counts[item.category] !== undefined) {
-          counts[item.category]++;
-        } else {
-          counts[item.category] = 1;
-        }
-      });
-
-      container.innerHTML = CATEGORIES.map((cat) => {
-        const isActive = state.activeCategory === cat;
-        const activeClasses = isActive
-          ? "bg-emerald-500 text-slate-950 font-bold border-emerald-500 shadow-sm"
-          : "theme-surface theme-text-secondary hover:border-emerald-500/40 font-medium";
-        const badgeClasses = isActive
-          ? "bg-slate-950/20 text-slate-950"
-          : "theme-elevated theme-text-muted";
-
-        return `
-          <button
-            onclick="setCategory('${escapeHtml(cat)}')"
-            class="px-3.5 py-1.5 rounded-xl border text-xs flex items-center gap-2 shrink-0 transition-all ${activeClasses}"
-          >
-            <span>${escapeHtml(cat)}</span>
-            <span class="px-1.5 py-0.2 rounded-full text-[11px] font-mono ${badgeClasses}">${counts[cat] || 0}</span>
-          </button>
-        `;
+    function renderCategories() {
+      const bar = document.getElementById("categoryBar");
+      bar.innerHTML = CATEGORIES.map(cat => {
+        const active = cat === activeCategory;
+        const cls = active
+          ? "bg-emerald-500 text-slate-950 font-semibold border-emerald-500"
+          : "bg-slate-900 text-slate-400 border-slate-800 hover:border-slate-700";
+        return `<button onclick="setCategory('${cat}')" class="px-3.5 py-1.5 rounded-full border text-xs transition-colors ${cls}">${cat}</button>`;
       }).join("");
-    }
-
-    function updateTagChipsUI() {
-      document.querySelectorAll(".tag-chip").forEach((btn) => {
-        const tag = btn.getAttribute("data-tag");
-        if (state.activeTag === tag) {
-          btn.classList.add("ring-2", "ring-emerald-400", "bg-emerald-500/20", "text-emerald-300");
-        } else {
-          btn.classList.remove("ring-2", "ring-emerald-400", "bg-emerald-500/20", "text-emerald-300");
-        }
-      });
-    }
-
-    function renderActiveFilterBanner() {
-      const banner = document.getElementById("activeFilterBanner");
-      const textContainer = document.getElementById("activeFilterText");
-      const pills = [];
-
-      if (state.searchQuery) {
-        pills.push(`<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-medium">Search: "${escapeHtml(state.searchQuery)}"</span>`);
-      }
-      if (state.activeCategory !== "All") {
-        pills.push(`<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-medium">Category: ${escapeHtml(state.activeCategory)}</span>`);
-      }
-      if (state.activeTag) {
-        pills.push(`<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-medium">Tag: #${escapeHtml(state.activeTag)}</span>`);
-      }
-      if (state.onlyBookmarked) {
-        pills.push(`<span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 font-medium">★ Saved Bookmarks Only</span>`);
-      }
-      if (state.minRatingFilter !== "all") {
-        const label = state.minRatingFilter === "low" ? "Under 3.0 (Flagged)" : `${state.minRatingFilter}+ Stars`;
-        pills.push(`<span class="px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-400 font-medium">Rating: ${label}</span>`);
-      }
-
-      if (pills.length > 0) {
-        banner.classList.remove("hidden");
-        banner.classList.add("flex");
-        textContainer.innerHTML = `<span class="theme-text-muted font-medium">Active filters:</span>` + pills.join("");
-      } else {
-        banner.classList.add("hidden");
-        banner.classList.remove("flex");
-      }
-    }
-
-    function getFilteredAndSortedItems() {
-      const q = state.searchQuery.trim().toLowerCase();
-
-      const filtered = directoryItems.filter((item) => {
-        const { score } = computeItemMetrics(item);
-
-        // Category check
-        if (state.activeCategory !== "All" && item.category !== state.activeCategory) {
-          return false;
-        }
-        // Bookmark check
-        if (state.onlyBookmarked && !item.bookmarked) {
-          return false;
-        }
-        // Tag check
-        if (state.activeTag && !(item.tags || []).some((t) => t.toLowerCase() === state.activeTag.toLowerCase())) {
-          return false;
-        }
-        // Rating tier check
-        if (state.minRatingFilter === "4.5" && score < 4.5) return false;
-        if (state.minRatingFilter === "3.5" && score < 3.5) return false;
-        if (state.minRatingFilter === "low" && score >= 3.0) return false;
-
-        // Search query check across name, domain, description, tags, and reviews
-        if (q) {
-          const inName = item.name.toLowerCase().includes(q);
-          const inDomain = item.domain.toLowerCase().includes(q);
-          const inDesc = (item.description || "").toLowerCase().includes(q);
-          const inTags = (item.tags || []).some((t) => t.toLowerCase().includes(q));
-          const inReviews = (item.reviews || []).some(
-            (r) => r.title.toLowerCase().includes(q) || r.comment.toLowerCase().includes(q)
-          );
-          if (!inName && !inDomain && !inDesc && !inTags && !inReviews) {
-            return false;
-          }
-        }
-        return true;
-      });
-
-      // Sort items
-      filtered.sort((a, b) => {
-        const mA = computeItemMetrics(a);
-        const mB = computeItemMetrics(b);
-        if (state.sortBy === "highest") {
-          return mB.score !== mA.score ? mB.score - mA.score : mB.count - mA.count;
-        }
-        if (state.sortBy === "lowest") {
-          return mA.score !== mB.score ? mA.score - mB.score : mB.count - mA.count;
-        }
-        if (state.sortBy === "most_reviewed") {
-          return mB.count !== mA.count ? mB.count - mA.count : mB.score - mA.score;
-        }
-        if (state.sortBy === "recent") {
-          return mB.latestDate.localeCompare(mA.latestDate);
-        }
-        return 0;
-      });
-
-      return filtered;
-    }
-
-    function renderDirectoryCards() {
-      const grid = document.getElementById("cardsGrid");
-      const emptyBox = document.getElementById("emptyStateBox");
-      const items = getFilteredAndSortedItems();
-
-      if (items.length === 0) {
-        grid.innerHTML = "";
-        emptyBox.classList.remove("hidden");
-        return;
-      }
-
-      emptyBox.classList.add("hidden");
-
-      grid.innerHTML = items.map((item) => {
-        const { score, count } = computeItemMetrics(item);
-        const tier = getTrustTier(score);
-        const latestReview = item.reviews && item.reviews.length > 0 ? item.reviews[0] : null;
-        const isFlagged = score < 2.5 || !item.verified;
-
-        // Verified or Caution badge
-        const statusBadgeHtml = item.verified
-          ? `<span class="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-400" title="Verified Listing">
-               <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-             </span>`
-          : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-rose-500/15 text-rose-400 border border-rose-500/30" title="Community Caution Flag">
-               ⚠ Caution
-             </span>`;
-
-        return `
-          <article
-            onclick="openProfileModal('${escapeHtml(item.id)}')"
-            class="directory-card theme-surface border rounded-2xl p-5 flex flex-col justify-between cursor-pointer relative group"
-          >
-            <div>
-              <!-- Card Header: Avatar, Title, Domain, Category & Bookmark -->
-              <div class="flex items-start justify-between gap-3 mb-3.5">
-                <div class="flex items-center gap-3 min-w-0">
-                  <div class="w-11 h-11 rounded-xl bg-gradient-to-br ${escapeHtml(item.iconBg || 'from-emerald-600 to-teal-800')} flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-md">
-                    ${escapeHtml(item.iconText || item.name.slice(0, 2).toUpperCase())}
-                  </div>
-                  <div class="min-w-0">
-                    <div class="flex items-center gap-1.5">
-                      <h2 class="font-bold text-base truncate group-hover:text-emerald-400 transition-colors">${escapeHtml(item.name)}</h2>
-                      ${statusBadgeHtml}
-                    </div>
-                    <div class="text-xs font-mono theme-text-muted truncate">${escapeHtml(item.domain)}</div>
-                  </div>
-                </div>
-
-                <!-- Bookmark & Category -->
-                <div class="flex items-center gap-1.5 shrink-0">
-                  <span class="px-2 py-0.5 rounded-md text-[11px] font-medium border theme-elevated theme-text-secondary">
-                    ${escapeHtml(item.category)}
-                  </span>
-                  <button
-                    type="button"
-                    onclick="toggleItemBookmark(event, '${escapeHtml(item.id)}')"
-                    class="p-1.5 rounded-lg border theme-elevated hover:border-amber-400/60 transition-colors"
-                    title="${item.bookmarked ? 'Remove from Saved' : 'Save Listing'}"
-                  >
-                    <svg class="w-4 h-4 ${item.bookmarked ? 'text-amber-400' : 'theme-text-muted'}" fill="${item.bookmarked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              <!-- Trustpilot Score Strip -->
-              <div class="flex items-center flex-wrap gap-2.5 py-2.5 px-3 rounded-xl border theme-elevated mb-3.5">
-                <span class="px-2 py-0.5 rounded-md font-mono font-extrabold text-sm ${tier.solidBg}">
-                  ${score.toFixed(1)}
-                </span>
-                ${renderTrustpilotStars(score, "md")}
-                <div class="flex items-center gap-1.5 text-xs ml-auto">
-                  <span class="font-bold ${tier.textColor}">${tier.label}</span>
-                  <span class="opacity-30">•</span>
-                  <span class="theme-text-muted">${count} ${count === 1 ? 'review' : 'reviews'}</span>
-                </div>
-              </div>
-
-              <!-- Short Description -->
-              <p class="text-xs theme-text-secondary line-clamp-2 mb-3 leading-relaxed">
-                ${escapeHtml(item.description)}
-              </p>
-
-              <!-- Community Tags -->
-              <div class="flex flex-wrap gap-1.5 mb-3.5">
-                ${(item.tags || []).slice(0, 4).map((tag) => {
-                  const isWarn = tag.toLowerCase().includes("warning") || tag.toLowerCase().includes("caution") || tag.toLowerCase().includes("unverified");
-                  const tagCls = isWarn
-                    ? "border-rose-500/30 bg-rose-500/10 text-rose-400"
-                    : "theme-elevated theme-text-muted";
-                  return `<span onclick="handleCardTagClick(event, '${escapeHtml(tag)}')" class="px-2 py-0.5 rounded text-[11px] border ${tagCls} hover:border-emerald-400 transition-colors">#${escapeHtml(tag)}</span>`;
-                }).join("")}
-              </div>
-            </div>
-
-            <!-- Highlighted Latest Review Snippet & Card Footer CTA -->
-            <div class="pt-3 border-t theme-border">
-              ${latestReview ? `
-                <div class="p-2.5 rounded-xl theme-elevated border mb-3">
-                  <div class="flex items-center justify-between text-[11px] mb-1">
-                    <span class="font-semibold text-emerald-400 truncate max-w-[180px]">"${escapeHtml(latestReview.title)}"</span>
-                    <span class="theme-text-muted font-mono">${escapeHtml(latestReview.author)}</span>
-                  </div>
-                  <p class="text-xs theme-text-muted line-clamp-2 italic">"${escapeHtml(latestReview.comment)}"</p>
-                </div>
-              ` : ""}
-
-              <div class="flex items-center justify-between text-xs">
-                <span class="theme-text-muted group-hover:text-emerald-400 font-medium flex items-center gap-1 transition-colors">
-                  <span>Inspect Trust Profile</span>
-                  <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                  </svg>
-                </span>
-                <button
-                  type="button"
-                  onclick="openQuickReviewForItem(event, '${escapeHtml(item.id)}')"
-                  class="px-2.5 py-1 rounded-lg border theme-elevated hover:border-emerald-500/60 hover:text-emerald-400 font-semibold transition-colors"
-                >
-                  + Review
-                </button>
-              </div>
-            </div>
-          </article>
-        `;
-      }).join("");
-    }
-
-    /*************************************************************************
-     * 7. FILTER & SEARCH INTERACTION HANDLERS
-     *************************************************************************/
-    function handleSearchInput(val) {
-      state.searchQuery = val;
-      const clearBtn = document.getElementById("clearSearchBtn");
-      if (val.trim().length > 0) {
-        clearBtn.classList.remove("hidden");
-      } else {
-        clearBtn.classList.add("hidden");
-      }
-      renderAll();
-    }
-
-    function clearSearch() {
-      const input = document.getElementById("mainSearchInput");
-      input.value = "";
-      handleSearchInput("");
-      input.focus();
     }
 
     function setCategory(cat) {
-      state.activeCategory = cat;
-      renderAll();
+      activeCategory = cat;
+      render();
     }
 
-    function toggleTagFilter(tag) {
-      state.activeTag = state.activeTag === tag ? null : tag;
-      renderAll();
-    }
-
-    function handleCardTagClick(event, tag) {
-      event.stopPropagation();
-      toggleTagFilter(tag);
-    }
-
-    function toggleBookmarkFilter() {
-      state.onlyBookmarked = !state.onlyBookmarked;
-      renderAll();
-    }
-
-    function handleRatingFilterChange(val) {
-      state.minRatingFilter = val;
-      renderAll();
-    }
-
-    function handleSortChange(val) {
-      state.sortBy = val;
-      renderAll();
-    }
-
-    function resetAllFilters() {
-      state.searchQuery = "";
-      state.activeCategory = "All";
-      state.activeTag = null;
-      state.onlyBookmarked = false;
-      state.minRatingFilter = "all";
-      state.sortBy = "highest";
-
-      document.getElementById("mainSearchInput").value = "";
-      document.getElementById("clearSearchBtn").classList.add("hidden");
-      document.getElementById("ratingFilterSelect").value = "all";
+    function resetFilters() {
+      activeCategory = "All";
+      document.getElementById("searchInput").value = "";
       document.getElementById("sortSelect").value = "highest";
-      renderAll();
+      render();
     }
 
-    function toggleItemBookmark(event, itemId) {
-      event.stopPropagation();
-      const item = directoryItems.find((i) => i.id === itemId);
-      if (!item) return;
-      item.bookmarked = !item.bookmarked;
-      saveDirectoryToStorage();
-      renderAll();
+    function render() {
+      renderCategories();
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const sortBy = document.getElementById("sortSelect").value;
+      const grid = document.getElementById("cardsGrid");
+      const empty = document.getElementById("emptyState");
 
-      if (state.activeProfileId === itemId) {
-        renderProfileModalContent(item);
-      }
-
-      showToast(
-        item.bookmarked ? `Saved "${item.name}" to your bookmarks` : `Removed "${item.name}" from saved`,
-        "info"
-      );
-    }
-
-    /*************************************************************************
-     * 8. DETAILED TRUST PROFILE MODAL (DISTRIBUTION BARS & INTERACTIVE FEED)
-     *************************************************************************/
-    function openProfileModal(itemId) {
-      const item = directoryItems.find((i) => i.id === itemId);
-      if (!item) return;
-      state.activeProfileId = itemId;
-      state.profileStarFilter = "all";
-      state.profileReviewSearch = "";
-
-      renderProfileModalContent(item);
-      const overlay = document.getElementById("profileModalOverlay");
-      overlay.classList.remove("hidden");
-      overlay.classList.add("flex");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeProfileModal() {
-      state.activeProfileId = null;
-      const overlay = document.getElementById("profileModalOverlay");
-      overlay.classList.add("hidden");
-      overlay.classList.remove("flex");
-      document.body.style.overflow = "";
-    }
-
-    function renderProfileModalContent(item) {
-      const { score, count } = computeItemMetrics(item);
-      const tier = getTrustTier(score);
-      const headerEl = document.getElementById("profileModalHeader");
-      const bodyEl = document.getElementById("profileModalBody");
-
-      // Calculate 5-star to 1-star distribution
-      const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-      (item.reviews || []).forEach((r) => {
-        const s = Math.min(5, Math.max(1, Math.round(r.rating)));
-        starCounts[s]++;
+      const filtered = items.filter(item => {
+        const matchesCat = activeCategory === "All" || item.category === activeCategory;
+        const matchesQuery = !query ||
+          item.name.toLowerCase().includes(query) ||
+          item.domain.toLowerCase().includes(query) ||
+          item.reviews.some(r => r.text.toLowerCase().includes(query));
+        return matchesCat && matchesQuery;
       });
 
-      const badgeColor = item.verified
-        ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
-        : "bg-rose-500/15 text-rose-400 border-rose-500/30";
-
-      headerEl.innerHTML = `
-        <div class="flex flex-col sm:flex-row sm:items-center gap-4 w-full">
-          <div class="flex items-center gap-3.5 flex-1 min-w-0">
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${escapeHtml(item.iconBg || 'from-emerald-600 to-teal-800')} flex items-center justify-center text-white font-extrabold text-lg shrink-0 shadow-lg">
-              ${escapeHtml(item.iconText || item.name.slice(0, 2).toUpperCase())}
-            </div>
-            <div class="min-w-0">
-              <div class="flex items-center flex-wrap gap-2">
-                <h2 class="text-xl sm:text-2xl font-extrabold truncate">${escapeHtml(item.name)}</h2>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold border ${badgeColor}">
-                  ${item.verified ? "✓ " : "⚠ "}${escapeHtml(item.safetyBadge || (item.verified ? "Verified" : "Unverified"))}
-                </span>
-              </div>
-              <div class="flex items-center flex-wrap gap-3 mt-1 text-xs theme-text-muted">
-                <a href="https://${escapeHtml(item.domain)}" target="_blank" rel="noopener noreferrer" class="font-mono text-emerald-400 hover:underline flex items-center gap-1">
-                  <span>${escapeHtml(item.domain)}</span>
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                </a>
-                <span>•</span>
-                <span>Category: <strong class="theme-text-secondary">${escapeHtml(item.category)}</strong></span>
-              </div>
-            </div>
-          </div>
-
-          <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
-            <button
-              onclick="toggleItemBookmark(event, '${escapeHtml(item.id)}')"
-              class="px-3 py-2 rounded-xl border theme-elevated text-xs font-semibold flex items-center gap-1.5 hover:border-amber-400"
-            >
-              <svg class="w-4 h-4 ${item.bookmarked ? 'text-amber-400' : 'theme-text-muted'}" fill="${item.bookmarked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
-              </svg>
-              <span>${item.bookmarked ? "Saved" : "Save"}</span>
-            </button>
-
-            <button
-              onclick="openQuickReviewForItem(event, '${escapeHtml(item.id)}')"
-              class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 shadow-md"
-            >
-              <span>★ Write Review</span>
-            </button>
-
-            <button onclick="closeProfileModal()" class="p-2 rounded-xl border theme-elevated theme-text-muted hover:text-rose-400">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      `;
-
-      // Distribution bars HTML
-      const distBarsHtml = [5, 4, 3, 2, 1].map((star) => {
-        const c = starCounts[star];
-        const pct = count > 0 ? Math.round((c / count) * 100) : 0;
-        const isSelected = String(state.profileStarFilter) === String(star);
-        const barColor =
-          star === 5 ? "bg-[#10b981]" :
-          star === 4 ? "bg-[#84cc16]" :
-          star === 3 ? "bg-[#f59e0b]" :
-          star === 2 ? "bg-orange-500" : "bg-[#ef4444]";
-
-        return `
-          <button
-            type="button"
-            onclick="setProfileStarFilter('${star}')"
-            class="w-full flex items-center gap-3 py-1 px-2 rounded-lg text-xs transition-colors ${isSelected ? 'bg-emerald-500/15 ring-1 ring-emerald-500/40' : 'hover:bg-slate-500/10'}"
-          >
-            <span class="w-12 text-left font-mono font-semibold">${star} ★</span>
-            <div class="flex-1 h-2.5 rounded-full bg-slate-500/20 overflow-hidden">
-              <div class="h-full ${barColor} rounded-full transition-all duration-300" style="width: ${pct}%"></div>
-            </div>
-            <span class="w-16 text-right font-mono theme-text-muted">${pct}% (${c})</span>
-          </button>
-        `;
-      }).join("");
-
-      bodyEl.innerHTML = `
-        <!-- Overview & Rating Breakdown Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          
-          <!-- Left: About & Tags (7 cols) -->
-          <div class="lg:col-span-7 p-4 sm:p-5 rounded-2xl border theme-elevated flex flex-col justify-between space-y-4">
-            <div>
-              <h3 class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-2">Listing Overview</h3>
-              <p class="text-sm theme-text-secondary leading-relaxed">${escapeHtml(item.description)}</p>
-            </div>
-
-            <div>
-              <div class="text-xs font-bold uppercase tracking-wider theme-text-muted mb-2">Community Attributes & Tags</div>
-              <div class="flex flex-wrap gap-1.5">
-                ${(item.tags || []).map((t) => `<span class="px-2.5 py-1 rounded-lg text-xs border theme-surface theme-text-secondary font-medium">#${escapeHtml(t)}</span>`).join("")}
-              </div>
-            </div>
-          </div>
-
-          <!-- Right: Trustpilot Score Box & 5-Star Distribution (5 cols) -->
-          <div class="lg:col-span-5 p-4 sm:p-5 rounded-2xl border theme-elevated space-y-4">
-            <div class="flex items-center justify-between border-b theme-border pb-3.5">
-              <div>
-                <div class="text-xs theme-text-muted font-medium">Kinoku TrustScore</div>
-                <div class="flex items-baseline gap-2 mt-0.5">
-                  <span class="text-3xl font-extrabold font-mono">${score.toFixed(1)}</span>
-                  <span class="text-xs font-bold px-2 py-0.5 rounded border ${tier.badgeBg}">${tier.label}</span>
-                </div>
-              </div>
-              <div class="text-right">
-                ${renderTrustpilotStars(score, "md")}
-                <div class="text-xs theme-text-muted mt-1">Based on <strong>${count}</strong> verified reviews</div>
-              </div>
-            </div>
-
-            <!-- Interactive Star Breakdown Bars -->
-            <div class="space-y-1">
-              <div class="flex items-center justify-between text-[11px] theme-text-muted mb-1">
-                <span>Click a bar to filter reviews by star rating:</span>
-                ${state.profileStarFilter !== "all" ? `<button onclick="setProfileStarFilter('all')" class="text-emerald-400 hover:underline font-semibold">Show All (${count})</button>` : ""}
-              </div>
-              ${distBarsHtml}
-            </div>
-          </div>
-        </div>
-
-        <!-- Review Feed Filter Bar -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2 border-t theme-border">
-          <div class="flex items-center gap-2 flex-wrap">
-            <h3 class="font-bold text-base">Community Reviews</h3>
-            <div class="flex items-center gap-1 text-xs">
-              ${["all", "5", "4", "3", "2", "1"].map((st) => {
-                const active = String(state.profileStarFilter) === st;
-                return `
-                  <button
-                    onclick="setProfileStarFilter('${st}')"
-                    class="px-2.5 py-1 rounded-lg border text-xs font-semibold transition-colors ${active ? 'bg-emerald-500 text-slate-950 border-emerald-500' : 'theme-elevated theme-text-muted'}"
-                  >
-                    ${st === "all" ? "All" : st + " ★"}
-                  </button>
-                `;
-              }).join("")}
-            </div>
-          </div>
-
-          <input
-            type="text"
-            value="${escapeHtml(state.profileReviewSearch)}"
-            oninput="handleProfileReviewSearch(this.value)"
-            placeholder="Filter reviews in ${escapeHtml(item.name)}..."
-            class="px-3.5 py-1.5 rounded-xl border theme-elevated text-xs sm:w-64 focus:outline-none focus:border-emerald-500"
-          />
-        </div>
-
-        <!-- Reviews List Container -->
-        <div id="profileReviewsListContainer" class="space-y-3.5">
-          ${renderProfileReviewsListHTML(item)}
-        </div>
-      `;
-    }
-
-    function renderProfileReviewsListHTML(item) {
-      const reviews = item.reviews || [];
-      const q = state.profileReviewSearch.trim().toLowerCase();
-
-      const filtered = reviews.filter((r) => {
-        if (state.profileStarFilter !== "all" && Math.round(r.rating) !== Number(state.profileStarFilter)) {
-          return false;
-        }
-        if (q) {
-          const matchTitle = (r.title || "").toLowerCase().includes(q);
-          const matchBody = (r.comment || "").toLowerCase().includes(q);
-          const matchAuthor = (r.author || "").toLowerCase().includes(q);
-          if (!matchTitle && !matchBody && !matchAuthor) return false;
-        }
-        return true;
+      filtered.sort((a, b) => {
+        const mA = getMetrics(a);
+        const mB = getMetrics(b);
+        if (sortBy === "highest") return mB.avg - mA.avg || mB.count - mA.count;
+        if (sortBy === "lowest") return mA.avg - mB.avg || mB.count - mA.count;
+        return mB.count - mA.count || mB.avg - mA.avg;
       });
 
       if (filtered.length === 0) {
-        return `
-          <div class="p-8 rounded-2xl border theme-elevated text-center text-xs theme-text-muted">
-            No reviews match the selected star filter or search keyword.
-          </div>
-        `;
+        grid.innerHTML = "";
+        empty.classList.remove("hidden");
+        return;
       }
 
-      return filtered.map((r) => {
-        const revTier = getTrustTier(r.rating);
-        const prosList = (r.pros || []).filter(Boolean);
-        const consList = (r.cons || []).filter(Boolean);
-
+      empty.classList.add("hidden");
+      grid.innerHTML = filtered.map(item => {
+        const { count, avg } = getMetrics(item);
+        const tier = getTierColor(avg);
+        const latest = item.reviews[0];
         return `
-          <div class="p-4 sm:p-5 rounded-2xl border theme-elevated space-y-3">
-            <div class="flex items-start justify-between gap-3">
-              <div class="flex items-center gap-2.5">
-                <div class="w-9 h-9 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center justify-center uppercase">
-                  ${escapeHtml((r.author || "U").slice(0, 2))}
-                </div>
-                <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-sm">${escapeHtml(r.author)}</span>
-                    ${r.verifiedUser ? `<span class="text-[10px] px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 font-medium">Verified Reviewer</span>` : ""}
-                  </div>
-                  <div class="text-[11px] theme-text-muted">${escapeHtml(r.role || "Community Member")} • ${escapeHtml(r.date)}</div>
-                </div>
-              </div>
-
-              <div class="flex items-center gap-2">
-                ${renderTrustpilotStars(r.rating, "sm")}
-                <span class="text-xs font-mono font-bold ${revTier.textColor}">${Number(r.rating).toFixed(1)}</span>
-              </div>
-            </div>
-
+          <div onclick="openDetail('${escapeHtml(item.id)}')" class="bg-slate-900/90 border border-slate-800 hover:border-slate-700 rounded-xl p-5 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-0.5">
             <div>
-              <h4 class="font-bold text-sm sm:text-base mb-1">${escapeHtml(r.title)}</h4>
-              <p class="text-xs sm:text-sm theme-text-secondary leading-relaxed">${escapeHtml(r.comment)}</p>
-            </div>
-
-            <!-- Pros & Cons Pills -->
-            ${(prosList.length > 0 || consList.length > 0) ? `
-              <div class="flex flex-wrap gap-2 pt-1">
-                ${prosList.map((p) => `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-medium">+ ${escapeHtml(p)}</span>`).join("")}
-                ${consList.map((c) => `<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs bg-rose-500/10 text-rose-400 border border-rose-500/20 font-medium">− ${escapeHtml(c)}</span>`).join("")}
+              <div class="flex items-start justify-between gap-2 mb-3">
+                <div>
+                  <h3 class="font-bold text-base text-slate-100">${escapeHtml(item.name)}</h3>
+                  <p class="text-xs text-slate-400">${escapeHtml(item.domain)}</p>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[11px] font-medium shrink-0">
+                  ${escapeHtml(item.category)}
+                </span>
               </div>
-            ` : ""}
-
-            <!-- Helpful Upvote Button -->
-            <div class="pt-2 border-t theme-border flex items-center justify-between text-xs">
-              <span class="theme-text-muted">Was this review helpful?</span>
-              <button
-                type="button"
-                onclick="toggleHelpfulVote('${escapeHtml(item.id)}', '${escapeHtml(r.id)}')"
-                class="px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1.5 transition-colors ${r.userVoted ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' : 'theme-surface theme-text-secondary hover:border-emerald-500/40'}"
-              >
-                <span>▲ Helpful</span>
-                <span class="font-mono">(${r.helpfulCount || 0})</span>
-              </button>
+              <div class="flex items-center gap-2.5 my-3">
+                <span class="px-2 py-0.5 rounded font-bold text-xs ${tier.badge}">${avg.toFixed(1)}</span>
+                ${renderStars(avg)}
+                <span class="text-xs text-slate-400">(${count} ${count === 1 ? "review" : "reviews"})</span>
+              </div>
+            </div>
+            <div class="mt-2 pt-3 border-t border-slate-800/80 text-xs text-slate-300 italic line-clamp-2">
+              "${escapeHtml(latest ? latest.text : "No reviews yet.")}"
             </div>
           </div>
         `;
       }).join("");
     }
 
-    function setProfileStarFilter(starVal) {
-      state.profileStarFilter = String(state.profileStarFilter) === String(starVal) ? "all" : String(starVal);
-      const item = directoryItems.find((i) => i.id === state.activeProfileId);
-      if (item) renderProfileModalContent(item);
-    }
-
-    function handleProfileReviewSearch(val) {
-      state.profileReviewSearch = val;
-      const item = directoryItems.find((i) => i.id === state.activeProfileId);
-      if (item) {
-        document.getElementById("profileReviewsListContainer").innerHTML = renderProfileReviewsListHTML(item);
-      }
-    }
-
-    function toggleHelpfulVote(itemId, reviewId) {
-      const item = directoryItems.find((i) => i.id === itemId);
+    function openDetail(id) {
+      const item = items.find(i => i.id === id);
       if (!item) return;
-      const rev = (item.reviews || []).find((r) => r.id === reviewId);
-      if (!rev) return;
+      const { count, avg } = getMetrics(item);
+      const tier = getTierColor(avg);
 
-      if (rev.userVoted) {
-        rev.helpfulCount = Math.max(0, (rev.helpfulCount || 1) - 1);
-        rev.userVoted = false;
-      } else {
-        rev.helpfulCount = (rev.helpfulCount || 0) + 1;
-        rev.userVoted = true;
-      }
+      document.getElementById("detailHeader").innerHTML = `
+        <div>
+          <div class="flex items-center gap-2">
+            <h2 class="text-xl font-bold">${escapeHtml(item.name)}</h2>
+            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-xs">${escapeHtml(item.category)}</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(item.domain)}</p>
+          <div class="flex items-center gap-2 mt-3">
+            <span class="px-2 py-0.5 rounded font-bold text-xs ${tier.badge}">${avg.toFixed(1)}</span>
+            ${renderStars(avg)}
+            <span class="text-xs text-slate-400">${count} total reviews</span>
+          </div>
+        </div>
+        <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-200 text-sm px-2 py-1">✕</button>
+      `;
 
-      saveDirectoryToStorage();
-      document.getElementById("profileReviewsListContainer").innerHTML = renderProfileReviewsListHTML(item);
-    }
+      document.getElementById("detailReviews").innerHTML = item.reviews.map(r => `
+        <div class="p-3.5 rounded-xl bg-slate-950 border border-slate-800/90 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="font-semibold text-xs text-slate-200">${escapeHtml(r.author)}</span>
+            ${renderStars(r.score)}
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(r.text)}</p>
+        </div>
+      `).join("");
 
-    /*************************************************************************
-     * 9. ADD LISTING / WRITE REVIEW MODAL LOGIC
-     *************************************************************************/
-    function openSubmissionModal(mode = "review", preselectedItemId = null) {
-      const overlay = document.getElementById("submissionModalOverlay");
-      populateTargetItemSelect(preselectedItemId || state.activeProfileId);
-      switchSubmissionMode(mode);
-      renderInteractiveStarPicker(5);
-
-      overlay.classList.remove("hidden");
-      overlay.classList.add("flex");
-      document.body.style.overflow = "hidden";
-    }
-
-    function openQuickReviewForItem(event, itemId) {
-      if (event) event.stopPropagation();
-      openSubmissionModal("review", itemId);
-    }
-
-    function closeSubmissionModal() {
-      const overlay = document.getElementById("submissionModalOverlay");
-      overlay.classList.add("hidden");
-      overlay.classList.remove("flex");
-      if (!state.activeProfileId) {
-        document.body.style.overflow = "";
-      }
-    }
-
-    function populateTargetItemSelect(selectedId = null) {
-      const select = document.getElementById("reviewTargetItemSelect");
-      select.innerHTML = directoryItems.map((item) => {
-        const isSelected = selectedId && item.id === selectedId ? "selected" : "";
-        return `<option value="${escapeHtml(item.id)}" ${isSelected}>${escapeHtml(item.name)} (${escapeHtml(item.domain)})</option>`;
-      }).join("");
-    }
-
-    function switchSubmissionMode(mode) {
-      state.submissionMode = mode;
-      const tabReview = document.getElementById("tabModeReview");
-      const tabListing = document.getElementById("tabModeListing");
-      const existingGroup = document.getElementById("existingItemSelectGroup");
-      const newListingGroup = document.getElementById("newListingFieldsGroup");
-
-      if (mode === "listing") {
-        tabListing.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950";
-        tabReview.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold theme-elevated theme-text-muted";
-        existingGroup.classList.add("hidden");
-        newListingGroup.classList.remove("hidden");
-        document.getElementById("newListingName").required = true;
-        document.getElementById("newListingDomain").required = true;
-        document.getElementById("newListingDesc").required = true;
-      } else {
-        tabReview.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold bg-emerald-500 text-slate-950";
-        tabListing.className = "px-3.5 py-1.5 rounded-lg text-xs font-bold theme-elevated theme-text-muted";
-        existingGroup.classList.remove("hidden");
-        newListingGroup.classList.add("hidden");
-        document.getElementById("newListingName").required = false;
-        document.getElementById("newListingDomain").required = false;
-        document.getElementById("newListingDesc").required = false;
-      }
-    }
-
-    function renderInteractiveStarPicker(selectedRating) {
-      const container = document.getElementById("interactiveStarPicker");
-      const labelEl = document.getElementById("selectedRatingLabel");
-      const hiddenInput = document.getElementById("reviewRatingInput");
-      hiddenInput.value = selectedRating;
-
-      const tier = getTrustTier(selectedRating);
-      labelEl.textContent = `${Number(selectedRating).toFixed(1)} — ${tier.label}`;
-      labelEl.className = `text-xs font-bold px-2.5 py-1 rounded-md border ${tier.badgeBg}`;
-
-      let html = "";
-      for (let i = 1; i <= 5; i++) {
-        const active = i <= selectedRating;
-        const bgStyle = active
-          ? `background-color: ${tier.hex};`
-          : `background-color: rgba(148, 163, 184, 0.22);`;
-        html += `
-          <button
-            type="button"
-            onclick="renderInteractiveStarPicker(${i})"
-            class="tp-star-box w-8 h-8 hover:scale-110 focus:outline-none"
-            style="${bgStyle}"
-            title="Rate ${i} out of 5"
-          >
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-          </button>
-        `;
-      }
-      container.innerHTML = html;
-    }
-
-    function handleFormSubmit(event) {
-      event.preventDefault();
-
-      const rating = Number(document.getElementById("reviewRatingInput").value) || 5;
-      const author = document.getElementById("reviewAuthorInput").value.trim() || "Anonymous";
-      const title = document.getElementById("reviewTitleInput").value.trim();
-      const comment = document.getElementById("reviewCommentInput").value.trim();
-      const pros = document.getElementById("reviewProsInput").value
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-      const cons = document.getElementById("reviewConsInput").value
-        .split(",")
-        .map((s) => s.trim())
-        .filter(Boolean);
-
-      const today = new Date().toISOString().split("T")[0];
-      const newReview = {
-        id: "rev-" + Date.now(),
-        author,
-        role: "Community Reviewer",
-        verifiedUser: true,
-        rating,
-        date: today,
-        title,
-        comment,
-        pros,
-        cons,
-        helpfulCount: 1,
-        userVoted: true
+      document.getElementById("detailAddReviewBtn").onclick = () => {
+        closeDetailModal();
+        openWriteModal(item.id);
       };
 
-      if (state.submissionMode === "listing") {
-        const name = document.getElementById("newListingName").value.trim();
-        const domain = document.getElementById("newListingDomain").value.trim().replace(/^https?:\/\//, "");
-        const category = document.getElementById("newListingCategory").value;
-        const description = document.getElementById("newListingDesc").value.trim();
-        const tagsRaw = document.getElementById("newListingTags").value
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean);
+      const modal = document.getElementById("detailModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
 
-        const newItem = {
-          id: name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now().toString().slice(-3),
+    function closeDetailModal(e) {
+      if (e && e.target.id !== "detailModal") return;
+      const modal = document.getElementById("detailModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function setFormMode(mode) {
+      formMode = mode;
+      const exBtn = document.getElementById("modeExistingBtn");
+      const newBtn = document.getElementById("modeNewBtn");
+      const exGroup = document.getElementById("existingGroup");
+      const newGroup = document.getElementById("newGroup");
+      const nameInput = document.getElementById("itemName");
+      const domainInput = document.getElementById("itemDomain");
+
+      if (mode === "new") {
+        newBtn.className = "flex-1 py-1.5 rounded-md bg-emerald-500 text-slate-950";
+        exBtn.className = "flex-1 py-1.5 rounded-md text-slate-400";
+        exGroup.classList.add("hidden");
+        newGroup.classList.remove("hidden");
+        nameInput.required = true;
+        domainInput.required = true;
+      } else {
+        exBtn.className = "flex-1 py-1.5 rounded-md bg-emerald-500 text-slate-950";
+        newBtn.className = "flex-1 py-1.5 rounded-md text-slate-400";
+        exGroup.classList.remove("hidden");
+        newGroup.classList.add("hidden");
+        nameInput.required = false;
+        domainInput.required = false;
+      }
+    }
+
+    function openWriteModal(selectedId) {
+      const select = document.getElementById("existingSelect");
+      select.innerHTML = items.map(i => `<option value="${escapeHtml(i.id)}" ${i.id === selectedId ? "selected" : ""}>${escapeHtml(i.name)} (${escapeHtml(i.domain)})</option>`).join("");
+      setFormMode("existing");
+      const modal = document.getElementById("writeModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeWriteModal(e) {
+      if (e && e.target.id !== "writeModal") return;
+      const modal = document.getElementById("writeModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function submitReview(e) {
+      e.preventDefault();
+      const author = document.getElementById("reviewAuthor").value.trim();
+      const score = Number(document.getElementById("reviewScore").value);
+      const text = document.getElementById("reviewText").value.trim();
+
+      if (formMode === "new") {
+        const name = document.getElementById("itemName").value.trim();
+        const domain = document.getElementById("itemDomain").value.trim();
+        const category = document.getElementById("itemCategory").value;
+        items.unshift({
+          id: "item-" + Date.now(),
           name,
           domain,
           category,
-          verified: rating >= 3,
-          safetyBadge: rating >= 3 ? "Community Verified" : "Community Caution Flag",
-          description,
-          tags: tagsRaw.length > 0 ? tagsRaw : [category, "Community Added"],
-          bookmarked: false,
-          iconBg: rating >= 3 ? "from-emerald-500 to-teal-700" : "from-rose-600 to-red-800",
-          iconText: name.slice(0, 2).toUpperCase(),
-          reviews: [newReview]
-        };
-
-        directoryItems.unshift(newItem);
-        saveDirectoryToStorage();
-        renderAll();
-        document.getElementById("submissionForm").reset();
-        closeSubmissionModal();
-        showToast(`Added "${name}" and published your initial review!`, "success");
+          reviews: [{ author, score, text }]
+        });
       } else {
-        const targetId = document.getElementById("reviewTargetItemSelect").value;
-        const targetItem = directoryItems.find((i) => i.id === targetId);
-        if (!targetItem) return;
-
-        targetItem.reviews.unshift(newReview);
-        saveDirectoryToStorage();
-        renderAll();
-
-        if (state.activeProfileId === targetId) {
-          renderProfileModalContent(targetItem);
-        }
-
-        document.getElementById("submissionForm").reset();
-        closeSubmissionModal();
-        showToast(`Published your ${rating}★ review for ${targetItem.name}!`, "success");
+        const targetId = document.getElementById("existingSelect").value;
+        const target = items.find(i => i.id === targetId);
+        if (target) target.reviews.unshift({ author, score, text });
       }
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+      document.getElementById("reviewForm").reset();
+      closeWriteModal();
+      render();
     }
 
-    /*************************************************************************
-     * 10. GITHUB PAGES JSON MANAGER MODAL
-     *************************************************************************/
-    function openJsonModal() {
-      state.resetConfirmPending = false;
-      const resetBtn = document.getElementById("resetDemoDataBtn");
-      resetBtn.textContent = "Reset to Default Demo Data";
-
-      const textarea = document.getElementById("jsonDataTextarea");
-      textarea.value = JSON.stringify(directoryItems, null, 2);
-
-      const overlay = document.getElementById("jsonModalOverlay");
-      overlay.classList.remove("hidden");
-      overlay.classList.add("flex");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeJsonModal() {
-      const overlay = document.getElementById("jsonModalOverlay");
-      overlay.classList.add("hidden");
-      overlay.classList.remove("flex");
-      if (!state.activeProfileId) {
-        document.body.style.overflow = "";
-      }
-    }
-
-    function copyJsonToClipboard() {
-      const textarea = document.getElementById("jsonDataTextarea");
-      textarea.select();
-      document.execCommand("copy");
-      showToast("Copied Kinoku JSON dataset to clipboard!", "success");
-    }
-
-    function downloadJsonFile() {
-      const dataStr = JSON.stringify(directoryItems, null, 2);
-      const blob = new Blob([dataStr], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "kinoku-directory-data.json";
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      showToast("Downloaded kinoku-directory-data.json", "success");
-    }
-
-    function importJsonFromTextarea() {
-      const raw = document.getElementById("jsonDataTextarea").value.trim();
-      try {
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) {
-          showToast("Invalid format: root JSON element must be an array.", "error");
-          return;
-        }
-        directoryItems = parsed;
-        saveDirectoryToStorage();
-        renderAll();
-        closeJsonModal();
-        showToast(`Imported ${parsed.length} listings into Kinoku!`, "success");
-      } catch (err) {
-        showToast("JSON Syntax Error: Please check your JSON formatting.", "error");
-      }
-    }
-
-    function triggerResetDemoData() {
-      const btn = document.getElementById("resetDemoDataBtn");
-      if (!state.resetConfirmPending) {
-        state.resetConfirmPending = true;
-        btn.textContent = "Click Again to Confirm Reset";
-        return;
-      }
-      directoryItems = JSON.parse(JSON.stringify(INITIAL_DIRECTORY_DATA));
-      saveDirectoryToStorage();
-      document.getElementById("jsonDataTextarea").value = JSON.stringify(directoryItems, null, 2);
-      state.resetConfirmPending = false;
-      btn.textContent = "Reset to Default Demo Data";
-      renderAll();
-      showToast("Restored default Kinoku demo listings.", "info");
-    }
-
-    /*************************************************************************
-     * 11. MODAL BACKDROP & TOAST NOTIFICATION UTILITIES
-     *************************************************************************/
-    function handleBackdropClick(event, overlayId) {
-      if (event.target.id === overlayId) {
-        if (overlayId === "profileModalOverlay") closeProfileModal();
-        if (overlayId === "submissionModalOverlay") closeSubmissionModal();
-        if (overlayId === "jsonModalOverlay") closeJsonModal();
-      }
-    }
-
-    function showToast(message, type = "success") {
-      const container = document.getElementById("toastContainer");
-      const toast = document.createElement("div");
-      const colors =
-        type === "error"
-          ? "border-rose-500/40 bg-rose-950/90 text-rose-200"
-          : type === "info"
-          ? "border-sky-500/40 bg-slate-900/95 text-sky-200"
-          : "border-emerald-500/40 bg-slate-900/95 text-emerald-300";
-
-      toast.className = `pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-xl border shadow-xl backdrop-blur-md text-xs font-semibold transition-all duration-300 ${colors}`;
-      toast.innerHTML = `
-        <span>${escapeHtml(message)}</span>
-        <button onclick="this.parentElement.remove()" class="opacity-70 hover:opacity-100">✕</button>
-      `;
-      container.appendChild(toast);
-
-      setTimeout(() => {
-        if (toast.parentElement) {
-          toast.style.opacity = "0";
-          setTimeout(() => toast.remove(), 250);
-        }
-      }, 3400);
-    }
-
-    // Start application on window load
-    window.onload = initApp;
+    render();
   </script>
 </body>
 </html>
